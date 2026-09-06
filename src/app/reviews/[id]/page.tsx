@@ -5,7 +5,7 @@ import { db, reviews } from "@/db";
 import { requireUserId } from "@/lib/session";
 import { updateReview, deleteReview } from "@/lib/actions";
 import { fmtDate } from "@/lib/dates";
-import { Card } from "@/components/ui";
+import { ReviewEditor } from "./review-editor";
 
 export const dynamic = "force-dynamic";
 
@@ -39,37 +39,12 @@ export default async function ReviewDetail({
         </h1>
       </header>
 
-      <form action={updateReview.bind(null, r.id)}>
-        <div className="grid gap-4 lg:grid-cols-2">
-          <Card>
-            <h2 className="mb-2 text-sm font-semibold text-blue-600">📋 계획</h2>
-            <textarea
-              name="planMd"
-              defaultValue={r.planMd ?? ""}
-              rows={18}
-              className="w-full font-mono text-sm leading-relaxed"
-            />
-          </Card>
-          <Card>
-            <h2 className="mb-2 text-sm font-semibold text-emerald-600">🪞 회고</h2>
-            <textarea
-              name="retroMd"
-              defaultValue={r.retroMd ?? ""}
-              rows={18}
-              className="w-full font-mono text-sm leading-relaxed"
-            />
-          </Card>
-        </div>
-        <div className="mt-4 flex items-center gap-2">
-          <button type="submit">저장</button>
-          <button
-            formAction={deleteReview.bind(null, r.id)}
-            className="ml-auto text-xs text-neutral-400 hover:text-red-500"
-          >
-            삭제
-          </button>
-        </div>
-      </form>
+      <ReviewEditor
+        planMd={r.planMd ?? ""}
+        retroMd={r.retroMd ?? ""}
+        updateAction={updateReview.bind(null, r.id)}
+        deleteAction={deleteReview.bind(null, r.id)}
+      />
     </div>
   );
 }
