@@ -2,7 +2,7 @@ import { sql } from "drizzle-orm";
 import { db, users } from "@/db";
 
 // 로그인 화면에 고지된 처리방침 시행일. 방침 개정 시 함께 올린다.
-export const PRIVACY_POLICY_VERSION = "2026-09-03";
+export const PRIVACY_POLICY_VERSION = "2026-09-06";
 
 /** 이메일 기준 upsert — 구글 로그인 = 회원가입. 내부 user id를 반환한다. */
 export async function upsertUser(

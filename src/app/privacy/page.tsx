@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export const metadata = { title: "개인정보처리방침 — WID" };
 
-const EFFECTIVE = "2026년 9월 3일";
+const EFFECTIVE = "2026년 9월 6일";
 const FIRST_EFFECTIVE = "2026년 8월 29일";
 const CONTACT = "mktfuturist@gmail.com";
 const OFFICER = "최주희";
@@ -75,6 +75,12 @@ export default function PrivacyPage() {
               ],
               ["자동 수집", "로그인 세션 쿠키", "로그인 상태 유지", "서비스 이용 과정에서 자동 생성"],
               ["자동 수집", "접속 IP, 접속 기록", "서비스 운영 및 보안(호스팅 로그)", "서비스 이용 과정에서 자동 생성"],
+              [
+                "선택",
+                "이용자가 업로드한 이미지(일정표·메모 등)",
+                "AI 분석으로 할 일 목록 추출",
+                "「이미지로 할 일 추출」 기능 이용 시 직접 업로드",
+              ],
             ]}
           />
           <p className="mt-2">
@@ -82,6 +88,13 @@ export default function PrivacyPage() {
             않습니다(구글 로그인만 사용). 이용자가 서비스에 직접 입력하는
             목표·할 일·루틴·노트·가계부 등의 데이터는 서비스 제공 목적으로만 저장되며,{" "}
             <b>본인 계정으로만 접근할 수 있습니다.</b>
+          </p>
+          <p className="mt-2">
+            <b>AI 기능 안내</b> — 「이미지로 할 일 추출」 기능을 이용하면 업로드한 이미지가
+            분석을 위해 Anthropic, PBC의 AI 서비스(Claude API)로 전송됩니다. 서비스는 이미지를
+            저장하지 않으며, 추출된 할 일 목록만 이용자가 확인·수정한 뒤 저장됩니다. Anthropic의
+            정책상 API로 전송된 데이터는 AI 모델 학습에 이용되지 않습니다. 이 기능을 이용하지
+            않으면 이미지가 전송되지 않습니다.
           </p>
         </Section>
 
@@ -123,6 +136,7 @@ export default function PrivacyPage() {
             rows={[
               ["Vercel Inc.", "서비스 호스팅"],
               ["Neon Inc.", "데이터베이스 운영 및 보관"],
+              ["Anthropic, PBC", "AI 이미지 분석(할 일 추출)"],
             ]}
           />
           <p className="mt-2">
@@ -149,6 +163,13 @@ export default function PrivacyPage() {
                 "이메일, 이름, 프로필 사진, 이용자가 입력한 데이터",
                 "데이터 보관",
                 "위탁 계약 종료 시까지",
+              ],
+              [
+                "Anthropic, PBC",
+                "미국",
+                "이용자가 업로드한 이미지(AI 기능 이용 시)",
+                "AI 분석(할 일 추출)",
+                "분석 처리 시까지 (서비스는 이미지를 저장하지 않음)",
               ],
             ]}
           />
