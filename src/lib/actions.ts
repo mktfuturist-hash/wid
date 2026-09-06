@@ -248,6 +248,37 @@ export async function createTask(fd: FormData) {
   refresh();
 }
 
+/* 이미지 추출 등 여러 건을 한 번에 등록 (프로젝트 지정 시 소유권 검증) */
+export async function createTasksBulk(
+  items: { title: string; dueDate: string | null }[],
+  projectId: number | null
+) {
+  const uid = await requireUserId();
+  let prj: { areaId: number | null } | null = null;
+  if (projectId != null) {
+    const [row] = await db
+      .select({ areaId: projects.areaId })
+      .from(projects)
+      .where(and(eq(projects.id, projectId), eq(projects.userId, uid)));
+    if (!row) return;
+    prj = row;
+  }
+  const values = items
+    .map((t) => ({ title: t.title.trim().slice(0, 200), dueDate: t.dueDate }))
+    .filter((t) => t.title.length > 0)
+    .slice(0, 30)
+    .map((t) => ({
+      userId: uid,
+      title: t.title,
+      dueDate: t.dueDate,
+      projectId: projectId ?? null,
+      areaId: prj?.areaId ?? null,
+    }));
+  if (values.length === 0) return;
+  await db.insert(tasks).values(values);
+  refresh();
+}
+
 export async function toggleTask(id: number, done: boolean) {
   const uid = await requireUserId();
   await db

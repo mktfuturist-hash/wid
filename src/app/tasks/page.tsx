@@ -7,6 +7,7 @@ import {
 import { todayStr, ddayLabel, fmtDate } from "@/lib/dates";
 import { Card, DdayBadge, Empty, SectionTitle } from "@/components/ui";
 import { requireUserId } from "@/lib/session";
+import { ImageTaskCapture } from "@/components/image-task-capture";
 
 export const dynamic = "force-dynamic";
 
@@ -92,6 +93,11 @@ export default async function TasksPage({
           <button type="submit">추가</button>
         </form>
       </Card>
+
+      {/* 이미지 → 할 일 추출 (AI) */}
+      <ImageTaskCapture
+        projects={prjs.filter((p) => p.status !== "done").map((p) => ({ id: p.id, title: p.title }))}
+      />
 
       <div className="flex gap-1.5">
         {VIEWS.map((v) => (

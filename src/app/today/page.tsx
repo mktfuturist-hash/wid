@@ -6,6 +6,7 @@ import { computeRoutineStats } from "@/lib/routine-stats";
 import { requireUserId } from "@/lib/session";
 import { todayStr, ddayLabel, fmtDate } from "@/lib/dates";
 import { Card, Empty } from "@/components/ui";
+import { ImageTaskCapture } from "@/components/image-task-capture";
 
 export const dynamic = "force-dynamic";
 
@@ -60,6 +61,11 @@ export default async function TodayPage() {
           <button type="submit">저장</button>
         </form>
       </Card>
+
+      {/* 이미지 → 할 일 추출 (AI) */}
+      <ImageTaskCapture
+        projects={prjs.filter((p) => p.status !== "done").map((p) => ({ id: p.id, title: p.title }))}
+      />
 
       {/* 데일리 루틴 — 매일 반복하는 행동 */}
       <section>
