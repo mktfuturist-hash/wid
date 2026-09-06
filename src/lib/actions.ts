@@ -418,7 +418,19 @@ export async function createRoutine(fd: FormData) {
     goalId: num(fd, "goalId"),
     areaId: num(fd, "areaId"),
     targetFreqWeekly: num(fd, "targetFreqWeekly"),
+    startDate: str(fd, "startDate"),
+    endDate: str(fd, "endDate"),
   });
+  refresh();
+}
+
+/* 루틴 기간(시작~종료)만 변경 — 비우면 상시 루틴으로 */
+export async function updateRoutinePeriod(id: number, fd: FormData) {
+  const uid = await requireUserId();
+  await db
+    .update(routines)
+    .set({ startDate: str(fd, "startDate"), endDate: str(fd, "endDate") })
+    .where(and(eq(routines.id, id), eq(routines.userId, uid)));
   refresh();
 }
 

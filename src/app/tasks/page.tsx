@@ -43,6 +43,7 @@ export default async function TasksPage({
       .orderBy(asc(tasks.dueDate), asc(tasks.id));
     list = list.filter((t) => t.dueDate && t.dueDate <= today);
   } else if (view === "upcoming") {
+    // (오늘 뷰 하단에도 예정 미리보기를 함께 보여준다 — 아래 upcoming 쿼리 참조)
     list = await db
       .select()
       .from(tasks)
@@ -63,6 +64,67 @@ export default async function TasksPage({
       .orderBy(desc(tasks.doneAt))
       .limit(100);
   }
+
+  // 오늘 뷰에서는 아래에 예정 건들도 이어서 보여준다
+  const upcomingPreview =
+    view === "today"
+      ? await db
+          .select()
+          .from(tasks)
+          .where(and(eq(tasks.userId, uid), eq(tasks.done, false), gt(tasks.dueDate, today)))
+          .orderBy(asc(tasks.dueDate), asc(tasks.id))
+      : [];
+
+  const renderRows = (items: typeof list) => (
+    <Card className="divide-y divide-neutral-100 p-0">
+      {items.map((t) => {
+        const prj = prjs.find((p) => p.id === t.projectId);
+        const overdue = !t.done && t.dueDate && t.dueDate < today;
+        return (
+          <div key={t.id} className="group flex items-center gap-3 px-4 py-2.5">
+            <form action={toggleTask.bind(null, t.id, !t.done)}>
+              <button
+                className={`flex h-5 w-5 items-center justify-center rounded-md border text-xs ${
+                  t.done
+                    ? "border-neutral-900 bg-neutral-900 text-white"
+                    : "border-neutral-300 bg-white text-transparent hover:border-neutral-500"
+                }`}
+                aria-label="완료 토글"
+              >
+                ✓
+              </button>
+            </form>
+            <div className="min-w-0 flex-1">
+              <span className={`text-sm ${t.done ? "text-neutral-400 line-through" : ""}`}>
+                {t.title}
+              </span>
+              {prj && (
+                <span className="ml-2 rounded bg-neutral-100 px-1.5 py-0.5 text-xs text-neutral-500">
+                  📁 {prj.title}
+                </span>
+              )}
+            </div>
+            {t.dueDate && !t.done && (
+              <span className={`text-xs tabular-nums ${overdue ? "text-red-500" : "text-neutral-400"}`}>
+                {fmtDate(t.dueDate)}
+              </span>
+            )}
+            {!t.done && <DdayBadge label={t.dueDate ? ddayLabel(t.dueDate) : ""} />}
+            <div className="invisible flex items-center gap-2 group-hover:visible">
+              {view === "inbox" && (
+                <form action={setTaskDueToday.bind(null, t.id)}>
+                  <button className="text-xs text-neutral-400 hover:text-neutral-700">오늘로</button>
+                </form>
+              )}
+              <form action={deleteTask.bind(null, t.id)}>
+                <button className="text-xs text-neutral-300 hover:text-red-500">삭제</button>
+              </form>
+            </div>
+          </div>
+        );
+      })}
+    </Card>
+  );
 
   return (
     <div className="space-y-6">
@@ -124,56 +186,17 @@ export default async function TasksPage({
             {view === "done" && "완료된 할 일이 없습니다"}
           </Empty>
         ) : (
-          <Card className="divide-y divide-neutral-100 p-0">
-            {list.map((t) => {
-              const prj = prjs.find((p) => p.id === t.projectId);
-              const overdue = !t.done && t.dueDate && t.dueDate < today;
-              return (
-                <div key={t.id} className="group flex items-center gap-3 px-4 py-2.5">
-                  <form action={toggleTask.bind(null, t.id, !t.done)}>
-                    <button
-                      className={`flex h-5 w-5 items-center justify-center rounded-md border text-xs ${
-                        t.done
-                          ? "border-neutral-900 bg-neutral-900 text-white"
-                          : "border-neutral-300 bg-white text-transparent hover:border-neutral-500"
-                      }`}
-                      aria-label="완료 토글"
-                    >
-                      ✓
-                    </button>
-                  </form>
-                  <div className="min-w-0 flex-1">
-                    <span className={`text-sm ${t.done ? "text-neutral-400 line-through" : ""}`}>
-                      {t.title}
-                    </span>
-                    {prj && (
-                      <span className="ml-2 rounded bg-neutral-100 px-1.5 py-0.5 text-xs text-neutral-500">
-                        📁 {prj.title}
-                      </span>
-                    )}
-                  </div>
-                  {t.dueDate && !t.done && (
-                    <span className={`text-xs tabular-nums ${overdue ? "text-red-500" : "text-neutral-400"}`}>
-                      {fmtDate(t.dueDate)}
-                    </span>
-                  )}
-                  {!t.done && <DdayBadge label={t.dueDate ? ddayLabel(t.dueDate) : ""} />}
-                  <div className="invisible flex items-center gap-2 group-hover:visible">
-                    {view === "inbox" && (
-                      <form action={setTaskDueToday.bind(null, t.id)}>
-                        <button className="text-xs text-neutral-400 hover:text-neutral-700">오늘로</button>
-                      </form>
-                    )}
-                    <form action={deleteTask.bind(null, t.id)}>
-                      <button className="text-xs text-neutral-300 hover:text-red-500">삭제</button>
-                    </form>
-                  </div>
-                </div>
-              );
-            })}
-          </Card>
+          renderRows(list)
         )}
       </section>
+
+      {/* 오늘 뷰 하단: 앞으로 예정된 건들도 이어서 보여준다 */}
+      {view === "today" && upcomingPreview.length > 0 && (
+        <section>
+          <SectionTitle>📅 예정 ({upcomingPreview.length})</SectionTitle>
+          {renderRows(upcomingPreview)}
+        </section>
+      )}
     </div>
   );
 }

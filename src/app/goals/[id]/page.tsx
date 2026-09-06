@@ -54,7 +54,7 @@ export default async function GoalDetail({
   return (
     <div className="space-y-8">
       <div className="text-sm">
-        <Link href="/goals" className="text-neutral-400 hover:text-neutral-600">← 목표 목록</Link>
+        <Link href="/goals" className="text-neutral-400 hover:text-neutral-600">← 세부 목표 목록</Link>
       </div>
 
       <header className="space-y-3">

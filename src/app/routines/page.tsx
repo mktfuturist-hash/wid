@@ -2,12 +2,25 @@ import { asc, eq, inArray } from "drizzle-orm";
 import { db, routines, routineLogs, goals, areas } from "@/db";
 import { requireUserId } from "@/lib/session";
 import {
-  createRoutine, logRoutine, unlogRoutineToday, setRoutineStatus, deleteRoutine,
+  createRoutine, logRoutine, unlogRoutineToday, setRoutineStatus, deleteRoutine, updateRoutinePeriod,
 } from "@/lib/actions";
-import { computeRoutineStats } from "@/lib/routine-stats";
-import { Card, Empty, SectionTitle } from "@/components/ui";
+import { computeRoutineStats, toKstDate } from "@/lib/routine-stats";
+import { todayStr, fmtDate } from "@/lib/dates";
+import { Card, Empty, FieldLabel, SectionTitle } from "@/components/ui";
 
 export const dynamic = "force-dynamic";
+
+/* start~end의 날짜 목록 (안전상 최대 140일) */
+function periodDays(start: string, end: string): string[] {
+  const out: string[] = [];
+  let t = new Date(start + "T00:00:00Z").getTime();
+  const endT = new Date(end + "T00:00:00Z").getTime();
+  while (t <= endT && out.length < 140) {
+    out.push(new Date(t).toISOString().slice(0, 10));
+    t += 86400000;
+  }
+  return out;
+}
 
 export default async function RoutinesPage() {
   const uid = await requireUserId();
@@ -55,19 +68,36 @@ export default async function RoutinesPage() {
       <Card>
         <SectionTitle>새 루틴</SectionTitle>
         <form action={createRoutine} className="flex flex-wrap items-end gap-2">
-          <input name="title" placeholder="루틴 (예: 매일 아침 독서 30분)" required className="min-w-56 flex-1" />
-          <select name="goalId" defaultValue="">
-            <option value="">연결 목표 없음</option>
-            {goalList.filter((g) => g.status === "active").map((g) => (
-              <option key={g.id} value={g.id}>🎯 {g.title}</option>
-            ))}
-          </select>
-          <select name="areaId" defaultValue="">
-            <option value="">영역 없음</option>
-            {areaList.filter((a) => !a.archived).map((a) => (
-              <option key={a.id} value={a.id}>{a.icon} {a.name}</option>
-            ))}
-          </select>
+          <label className="min-w-56 flex-1">
+            <FieldLabel>루틴 이름</FieldLabel>
+            <input name="title" placeholder="루틴 (예: 매일 아침 독서 30분)" required className="w-full" />
+          </label>
+          <label>
+            <FieldLabel>연결 목표</FieldLabel>
+            <select name="goalId" defaultValue="">
+              <option value="">연결 목표 없음</option>
+              {goalList.filter((g) => g.status === "active").map((g) => (
+                <option key={g.id} value={g.id}>🎯 {g.title}</option>
+              ))}
+            </select>
+          </label>
+          <label>
+            <FieldLabel>영역</FieldLabel>
+            <select name="areaId" defaultValue="">
+              <option value="">영역 없음</option>
+              {areaList.filter((a) => !a.archived).map((a) => (
+                <option key={a.id} value={a.id}>{a.icon} {a.name}</option>
+              ))}
+            </select>
+          </label>
+          <label>
+            <FieldLabel>기간 시작 (비우면 상시)</FieldLabel>
+            <input type="date" name="startDate" />
+          </label>
+          <label>
+            <FieldLabel>기간 종료</FieldLabel>
+            <input type="date" name="endDate" />
+          </label>
           <button type="submit">추가</button>
         </form>
       </Card>
@@ -81,6 +111,13 @@ export default async function RoutinesPage() {
             {active.map((r) => {
               const st = statsOf(r.id);
               const goal = goalList.find((g) => g.id === r.goalId);
+              const hasPeriod = !!(r.startDate && r.endDate);
+              const daySet = new Set(
+                logs.filter((l) => l.routineId === r.id).map((l) => toKstDate(l.loggedAt))
+              );
+              const days = hasPeriod ? periodDays(r.startDate!, r.endDate!) : [];
+              const doneInPeriod = days.filter((d) => daySet.has(d)).length;
+              const today = todayStr();
               return (
                 <Card key={r.id}>
                   <div className="flex items-center gap-3">
@@ -105,7 +142,10 @@ export default async function RoutinesPage() {
                     )}
                     <div className="min-w-0 flex-1">
                       <div className="font-medium">{r.title}</div>
-                      <div className="mt-0.5 flex items-center gap-2 text-xs text-neutral-400">
+                      <div className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-neutral-400">
+                        <span className={`rounded px-1.5 py-0.5 ${hasPeriod ? "bg-blue-50 text-blue-600" : "bg-neutral-100 text-neutral-500"}`}>
+                          {hasPeriod ? `📅 ${fmtDate(r.startDate!)} ~ ${fmtDate(r.endDate!)}` : "매일 · 상시"}
+                        </span>
                         {goal && <span>🎯 {goal.title}</span>}
                         <span>이번 달 {st.monthCount}회</span>
                         <span>· 전체 {st.totalCount}회</span>
@@ -114,21 +154,71 @@ export default async function RoutinesPage() {
                         )}
                       </div>
                     </div>
-                    {/* 최근 28일 히트맵 */}
-                    <div className="hidden grid-cols-14 gap-0.5 sm:grid" style={{ gridTemplateColumns: "repeat(14, 8px)" }}>
-                      {st.last28.map((on, i) => (
-                        <div
-                          key={i}
-                          className={`h-2 w-2 rounded-[2px] ${on ? "bg-emerald-400" : "bg-neutral-150 bg-neutral-200/70"}`}
-                        />
-                      ))}
-                    </div>
+                    {/* 상시 루틴은 최근 28일 히트맵 (기간 루틴은 아래 기간 전체 히트맵) */}
+                    {!hasPeriod && (
+                      <div className="hidden gap-0.5 sm:grid" style={{ gridTemplateColumns: "repeat(14, 8px)" }}>
+                        {st.last28.map((on, i) => (
+                          <div
+                            key={i}
+                            className={`h-2 w-2 rounded-[2px] ${on ? "bg-emerald-400" : "bg-neutral-200/70"}`}
+                          />
+                        ))}
+                      </div>
+                    )}
                     <div className="flex flex-col items-end gap-1">
                       <form action={setRoutineStatus.bind(null, r.id, "stopped")}>
                         <button className="text-xs text-neutral-300 hover:text-neutral-500">중단</button>
                       </form>
                     </div>
                   </div>
+
+                  {/* 기간 히트맵 — 설정된 기간 전체를 블록으로 */}
+                  {hasPeriod && (
+                    <div className="mt-3 border-t border-neutral-100 pt-3">
+                      <div className="mb-1.5 flex items-center justify-between text-xs text-neutral-400">
+                        <span>기간 달성 {doneInPeriod}/{days.length}일</span>
+                        <span className="tabular-nums">{Math.round((doneInPeriod / days.length) * 100)}%</span>
+                      </div>
+                      <div className="flex flex-wrap gap-1">
+                        {days.map((d) => {
+                          const done = daySet.has(d);
+                          const isToday = d === today;
+                          const future = d > today;
+                          return (
+                            <div
+                              key={d}
+                              title={`${fmtDate(d)}${done ? " ✓" : ""}`}
+                              className={`h-3.5 w-3.5 rounded-[3px] ${
+                                done
+                                  ? "bg-emerald-500"
+                                  : future
+                                    ? "bg-neutral-100"
+                                    : "bg-neutral-300/70"
+                              } ${isToday ? "ring-2 ring-neutral-900 ring-offset-1" : ""}`}
+                            />
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 기간 설정/변경 — 접힘 폼 */}
+                  <details className="mt-2">
+                    <summary className="cursor-pointer text-xs text-neutral-400 hover:text-neutral-600">
+                      기간 {hasPeriod ? "변경" : "설정"} (비우고 저장하면 상시로)
+                    </summary>
+                    <form action={updateRoutinePeriod.bind(null, r.id)} className="mt-2 flex flex-wrap items-end gap-2">
+                      <label>
+                        <FieldLabel>시작일</FieldLabel>
+                        <input type="date" name="startDate" defaultValue={r.startDate ?? ""} />
+                      </label>
+                      <label>
+                        <FieldLabel>종료일</FieldLabel>
+                        <input type="date" name="endDate" defaultValue={r.endDate ?? ""} />
+                      </label>
+                      <button type="submit" className="btn-ghost">저장</button>
+                    </form>
+                  </details>
                 </Card>
               );
             })}

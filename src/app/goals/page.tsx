@@ -42,14 +42,14 @@ export default async function GoalsPage() {
   return (
     <div className="space-y-8">
       <header>
-        <h1 className="text-2xl font-bold">🎯 목표</h1>
+        <h1 className="text-2xl font-bold">🎯 세부 목표</h1>
         <p className="mt-1 text-sm text-neutral-500">
           어디로 가는가 — 기한과 측정 방식을 정하면 진척률이 자동으로 계산됩니다.
         </p>
       </header>
 
       <Card>
-        <SectionTitle>새 목표</SectionTitle>
+        <SectionTitle>새 세부 목표</SectionTitle>
         {/* 상위 카테고리(영역)부터 왼쪽에 배치 */}
         <form action={createGoal} className="flex flex-wrap items-end gap-2">
           <label>

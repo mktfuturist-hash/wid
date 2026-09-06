@@ -27,9 +27,9 @@ export default async function AreasPage() {
   return (
     <div className="space-y-8">
       <header>
-        <h1 className="text-2xl font-bold">🗂️ 영역</h1>
+        <h1 className="text-2xl font-bold">🚩 최종 목표</h1>
         <p className="mt-1 text-sm text-neutral-500">
-          인생을 구성하는 최상위 카테고리. 영역에서 목표·프로젝트·노트가 뻗어나갑니다.
+          일·삶·돈에서 내가 도달하려는 모습 — 여기서 세부 목표·프로젝트·노트가 뻗어나갑니다.
         </p>
       </header>
 

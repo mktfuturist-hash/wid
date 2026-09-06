@@ -11,7 +11,15 @@ export type SidebarUser = {
   image: string | null;
 } | null;
 
-type NavItem = { href: string; label: string; icon: string; group?: boolean; groupLabel?: string };
+type NavItem = {
+  href: string;
+  label: string;
+  icon: string;
+  group?: boolean;
+  groupLabel?: string;
+  /** 상위 메뉴의 하위 구조임을 └ 들여쓰기로 표현 */
+  indent?: boolean;
+};
 
 /* 메뉴는 세 묶음 — 실행(오늘 움직인다) / 계획(어디로 갈지 정한다) / 기록(쌓아둔다) */
 const NAV: NavItem[] = [
@@ -19,10 +27,10 @@ const NAV: NavItem[] = [
   { href: "/today", label: "오늘", icon: "☀️", group: true, groupLabel: "오늘을 움직이는 실행" },
   { href: "/tasks", label: "전체 할 일", icon: "✅" },
   { href: "/routines", label: "데일리 루틴", icon: "🔁" },
-  // 계층: 영역 > 목표(중간 목표) > 프로젝트 > 할 일
-  { href: "/areas", label: "영역", icon: "🗂️", group: true, groupLabel: "내 인생의 지도" },
-  { href: "/goals", label: "목표", icon: "🎯" },
-  { href: "/projects", label: "프로젝트", icon: "📁" },
+  // 계층: 최종 목표(영역) > 세부 목표 > 프로젝트 > 할 일
+  { href: "/areas", label: "최종 목표", icon: "🚩", group: true, groupLabel: "내 인생의 지도" },
+  { href: "/goals", label: "세부 목표", icon: "🎯" },
+  { href: "/projects", label: "프로젝트", icon: "📁", indent: true },
   { href: "/notes", label: "노트", icon: "📝", group: true, groupLabel: "쌓아두고 돌아보기" },
   { href: "/reviews", label: "계획·회고", icon: "🪞" },
   { href: "/money", label: "머니", icon: "💰" },
@@ -86,6 +94,7 @@ export function Sidebar({ user, isAdmin = false }: { user: SidebarUser; isAdmin?
                     {active && (
                       <span className="absolute inset-y-1 left-0 w-0.5 rounded-full bg-brand" />
                     )}
+                    {item.indent && <span className="pl-1 text-navy-faint">└</span>}
                     <span className="text-base">{item.icon}</span>
                     {item.label}
                   </Link>
@@ -201,12 +210,13 @@ export function Sidebar({ user, isAdmin = false }: { user: SidebarUser; isAdmin?
                     )}
                     <Link
                       href={item.href}
-                      className={`flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm ${
+                      className={`flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[15px] font-semibold ${
                         active
-                          ? "bg-navy-soft font-medium text-white"
+                          ? "bg-navy-soft text-white"
                           : "text-navy-text hover:bg-navy-soft/60 hover:text-white"
                       }`}
                     >
+                      {item.indent && <span className="pl-1 text-navy-faint">└</span>}
                       <span className="text-base">{item.icon}</span>
                       {item.label}
                     </Link>
@@ -237,8 +247,8 @@ export function Sidebar({ user, isAdmin = false }: { user: SidebarUser; isAdmin?
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] ${
-                active ? "font-semibold text-brand-deep" : "text-neutral-400"
+              className={`flex flex-1 flex-col items-center gap-0.5 py-2 text-[12px] font-medium ${
+                active ? "font-semibold text-brand-deep" : "text-neutral-500"
               }`}
             >
               <span className="text-lg leading-none">{item.icon}</span>

@@ -142,6 +142,9 @@ export const routines = pgTable("routines", {
     .notNull()
     .default("active"),
   targetFreqWeekly: integer("target_freq_weekly"),
+  /* 루틴 기간 — 둘 다 있으면 기간 히트맵, 없으면 상시(매일) 루틴 */
+  startDate: date("start_date"),
+  endDate: date("end_date"),
 });
 
 // 루틴 원터치 기록 — 클릭 시각 자동 저장
