@@ -9,6 +9,16 @@ import { toKstDate } from "@/lib/routine-stats";
 
 export const dynamic = "force-dynamic";
 
+/* 카드 미리보기용 — 마크다운 기호를 걷어내고 순수 텍스트만 */
+function previewText(md: string): string {
+  return md
+    .replace(/^#{1,6}\s*/gm, "")
+    .replace(/^[-*>]\s+/gm, "")
+    .replace(/[*_`]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 const TYPE_META = {
   note: { label: "노트", icon: "📝" },
   file: { label: "파일", icon: "📎" },
@@ -116,11 +126,14 @@ export default async function NotesPage({
               <Link key={n.id} href={`/notes/${n.id}`} className="block">
                 <Card className="h-full transition hover:border-neutral-400">
                   <div className="flex items-start justify-between gap-2">
-                    <span className="font-semibold">{TYPE_META[n.type].icon} {n.title}</span>
+                    {/* 긴 URL 제목도 카드 안에서 줄바꿈되도록 break-all + 2줄 제한 */}
+                    <span className="min-w-0 flex-1 break-all font-semibold line-clamp-2">
+                      {TYPE_META[n.type].icon} {n.title}
+                    </span>
                     <span className="shrink-0 text-xs text-amber-500">{"★".repeat(n.importance)}</span>
                   </div>
                   {n.bodyMd && (
-                    <p className="mt-1.5 line-clamp-2 text-xs text-neutral-400">{n.bodyMd}</p>
+                    <p className="mt-1.5 line-clamp-2 break-all text-xs text-neutral-400">{previewText(n.bodyMd)}</p>
                   )}
                   <div className="mt-2 flex flex-wrap gap-1 text-xs text-neutral-400">
                     {area && <span className="rounded bg-neutral-100 px-1.5 py-0.5">{area.icon} {area.name}</span>}
