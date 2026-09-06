@@ -16,14 +16,14 @@ type NavItem = { href: string; label: string; icon: string; group?: boolean; gro
 /* 메뉴는 세 묶음 — 실행(오늘 움직인다) / 계획(어디로 갈지 정한다) / 기록(쌓아둔다) */
 const NAV: NavItem[] = [
   { href: "/", label: "홈", icon: "🏠" },
-  { href: "/today", label: "오늘", icon: "☀️", group: true, groupLabel: "실행 — 오늘 움직인다" },
+  { href: "/today", label: "오늘", icon: "☀️", group: true, groupLabel: "오늘을 움직이는 실행" },
   { href: "/tasks", label: "전체 할 일", icon: "✅" },
   { href: "/routines", label: "데일리 루틴", icon: "🔁" },
   // 계층: 영역 > 목표(중간 목표) > 프로젝트 > 할 일
-  { href: "/areas", label: "영역", icon: "🗂️", group: true, groupLabel: "계획 — 어디로 갈지 정한다" },
+  { href: "/areas", label: "영역", icon: "🗂️", group: true, groupLabel: "내 인생의 지도" },
   { href: "/goals", label: "목표", icon: "🎯" },
   { href: "/projects", label: "프로젝트", icon: "📁" },
-  { href: "/notes", label: "노트", icon: "📝", group: true, groupLabel: "기록 — 쌓아둔다" },
+  { href: "/notes", label: "노트", icon: "📝", group: true, groupLabel: "쌓아두고 돌아보기" },
   { href: "/reviews", label: "계획·회고", icon: "🪞" },
   { href: "/money", label: "머니", icon: "💰" },
 ];
@@ -54,7 +54,7 @@ export function Sidebar({ user, isAdmin = false }: { user: SidebarUser; isAdmin?
           <Link href="/" className="mb-6 block px-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/logo-wide.png" alt="WID planner" className="w-full" />
-            <span className="mt-1.5 block text-[10px] leading-tight text-navy-faint">
+            <span className="mt-1.5 block text-[13px] leading-tight text-navy-faint">
               What I Do makes me Wiser.
             </span>
           </Link>
@@ -69,7 +69,7 @@ export function Sidebar({ user, isAdmin = false }: { user: SidebarUser; isAdmin?
                   {item.group && (
                     <div className="mb-1 mt-3 border-t border-navy-soft pt-2">
                       {item.groupLabel && (
-                        <div className="px-2.5 text-[10px] font-semibold tracking-wide text-navy-faint">
+                        <div className="px-2.5 text-[13px] font-semibold tracking-wide text-navy-faint">
                           {item.groupLabel}
                         </div>
                       )}
@@ -193,7 +193,7 @@ export function Sidebar({ user, isAdmin = false }: { user: SidebarUser; isAdmin?
                     {item.group && (
                       <div className="mb-1 mt-3 border-t border-navy-soft pt-2">
                         {item.groupLabel && (
-                          <div className="px-2.5 text-[10px] font-semibold tracking-wide text-navy-faint">
+                          <div className="px-2.5 text-[13px] font-semibold tracking-wide text-navy-faint">
                             {item.groupLabel}
                           </div>
                         )}
