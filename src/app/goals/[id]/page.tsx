@@ -1,11 +1,12 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { and, eq, asc } from "drizzle-orm";
-import { db, goals, milestones, areas, moneyAccounts } from "@/db";
+import { db, goals, milestones, areas, moneyAccounts, projects, tasks } from "@/db";
+import { inArray } from "drizzle-orm";
 import { requireUserId } from "@/lib/session";
 import {
   updateGoal, deleteGoal, addMilestone, toggleMilestone, updateMilestone, deleteMilestone,
-  setGoalStatus, updateGoalCurrent,
+  setGoalStatus, updateGoalCurrent, toggleTask,
 } from "@/lib/actions";
 import { MilestoneRow } from "./milestone-row";
 import { NumberInput } from "@/components/number-input";
@@ -41,12 +42,21 @@ export default async function GoalDetail({
     .where(and(eq(goals.id, id), eq(goals.userId, uid)));
   if (!g) notFound();
 
-  const [ms, areaList, accts, withProgress] = await Promise.all([
+  const [ms, areaList, accts, withProgress, linkedProjects] = await Promise.all([
     db.select().from(milestones).where(eq(milestones.goalId, id)).orderBy(asc(milestones.dueDate), asc(milestones.id)),
     db.select().from(areas).where(eq(areas.userId, uid)).orderBy(asc(areas.sort), asc(areas.id)),
     db.select().from(moneyAccounts).where(eq(moneyAccounts.userId, uid)),
     getGoalsWithProgress(uid),
+    db.select().from(projects).where(and(eq(projects.goalId, id), eq(projects.userId, uid))).orderBy(asc(projects.startDate), asc(projects.id)),
   ]);
+  // 연결된 프로젝트들의 할 일 (현황판용)
+  const projectTasks = linkedProjects.length
+    ? await db
+        .select()
+        .from(tasks)
+        .where(inArray(tasks.projectId, linkedProjects.map((p) => p.id)))
+        .orderBy(asc(tasks.dueDate), asc(tasks.id))
+    : [];
   const gp = withProgress.find((x) => x.id === id);
   const area = areaList.find((a) => a.id === g.areaId);
   const next = gp?.nextMilestone ?? null;
@@ -105,6 +115,63 @@ export default async function GoalDetail({
           </p>
         )}
       </header>
+
+      {/* 연결된 프로젝트 현황판 — 프로젝트명 + 하위 할 일을 한눈에 */}
+      {linkedProjects.length > 0 && (
+        <Card>
+          <SectionTitle>📁 연결된 프로젝트 ({linkedProjects.length})</SectionTitle>
+          <div className="space-y-4">
+            {linkedProjects.map((p) => {
+              const pts = projectTasks.filter((t) => t.projectId === p.id);
+              const doneCnt = pts.filter((t) => t.done).length;
+              return (
+                <div key={p.id} className="rounded-lg border border-neutral-100 p-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <Link href={`/projects/${p.id}`} className="min-w-0 truncate font-medium hover:underline">
+                      📁 {p.title}
+                    </Link>
+                    <span className="shrink-0 text-xs text-neutral-400">
+                      {p.startDate && p.endDate && `${fmtDate(p.startDate)} ~ ${fmtDate(p.endDate)} · `}
+                      할 일 {doneCnt}/{pts.length}
+                    </span>
+                  </div>
+                  {pts.length > 0 && (
+                    <>
+                      <div className="mt-2">
+                        <ProgressBar value={pts.length ? doneCnt / pts.length : null} pillar={area?.pillar ?? "work"} />
+                      </div>
+                      <ul className="mt-2 space-y-1">
+                        {pts.map((t) => (
+                          <li key={t.id} className="flex items-center gap-2 text-sm">
+                            <form action={toggleTask.bind(null, t.id, !t.done)}>
+                              <button
+                                className={`unstyled flex h-4 w-4 cursor-pointer items-center justify-center rounded border text-[10px] ${
+                                  t.done
+                                    ? "border-neutral-900 bg-neutral-900 text-white"
+                                    : "border-neutral-300 bg-white text-transparent hover:border-neutral-500"
+                                }`}
+                                aria-label="완료 토글"
+                              >
+                                ✓
+                              </button>
+                            </form>
+                            <span className={`min-w-0 flex-1 truncate ${t.done ? "text-neutral-400 line-through" : "text-neutral-700"}`}>
+                              {t.title}
+                            </span>
+                            {t.dueDate && (
+                              <span className="shrink-0 text-xs tabular-nums text-neutral-400">{fmtDate(t.dueDate)}</span>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+      )}
 
       <Card>
         <SectionTitle>중간 목표 ({gp?.milestoneDone ?? 0}/{gp?.milestoneTotal ?? 0})</SectionTitle>

@@ -18,9 +18,23 @@ export function NewProjectForm({
   action: (fd: FormData) => Promise<void>;
 }) {
   const [areaId, setAreaId] = useState("");
+  const [goalId, setGoalId] = useState("");
   const filteredGoals = areaId
     ? goals.filter((g) => String(g.areaId) === areaId)
     : goals;
+
+  const onAreaChange = (v: string) => {
+    setAreaId(v);
+    // 바뀐 영역에 속하지 않는 목표가 선택돼 있으면 해제
+    const g = goals.find((x) => String(x.id) === goalId);
+    if (v && g && String(g.areaId) !== v) setGoalId("");
+  };
+  const onGoalChange = (v: string) => {
+    setGoalId(v);
+    // 목표를 고르면 그 목표의 영역을 자동으로 채운다
+    const g = goals.find((x) => String(x.id) === v);
+    if (g?.areaId != null) setAreaId(String(g.areaId));
+  };
 
   return (
     <form action={action} className="space-y-3">
@@ -28,7 +42,7 @@ export function NewProjectForm({
         <h2 className="text-sm font-semibold text-neutral-500">새 프로젝트</h2>
         <label className="flex items-center gap-1.5">
           <span className="text-xs text-neutral-400">영역</span>
-          <select name="areaId" value={areaId} onChange={(e) => setAreaId(e.target.value)}>
+          <select name="areaId" value={areaId} onChange={(e) => onAreaChange(e.target.value)}>
             <option value="">영역 없음</option>
             {areas.map((a) => (
               <option key={a.id} value={a.id}>{a.icon} {a.name}</option>
@@ -37,8 +51,7 @@ export function NewProjectForm({
         </label>
         <label className="flex items-center gap-1.5">
           <span className="text-xs text-neutral-400">연결 목표</span>
-          {/* 영역이 바뀌면 key로 리셋해 다른 영역 목표가 남아있지 않게 한다 */}
-          <select name="goalId" key={areaId} defaultValue="">
+          <select name="goalId" value={goalId} onChange={(e) => onGoalChange(e.target.value)}>
             <option value="">연결 목표 없음</option>
             {filteredGoals.map((g) => (
               <option key={g.id} value={g.id}>🎯 {g.title}</option>

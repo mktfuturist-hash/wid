@@ -92,8 +92,8 @@ export default async function ProjectDetail({
         <form action={createTask} className="mt-3 flex items-end gap-2 border-t border-neutral-100 pt-3">
           <input type="hidden" name="projectId" value={p.id} />
           <label className="flex-1">
-            <FieldLabel>할 일</FieldLabel>
-            <input name="title" placeholder="새 할 일" required className="w-full" />
+            <FieldLabel>할 일 (여러 줄 붙여넣으면 줄마다 등록)</FieldLabel>
+            <textarea name="title" placeholder="새 할 일" required rows={2} className="w-full" />
           </label>
           <label>
             <FieldLabel>기한</FieldLabel>

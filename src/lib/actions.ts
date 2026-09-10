@@ -234,17 +234,22 @@ export async function deleteMilestone(id: number) {
 // ── 할 일 ──
 export async function createTask(fd: FormData) {
   const uid = await requireUserId();
-  const title = str(fd, "title");
-  if (!title) return;
+  const raw = str(fd, "title");
+  if (!raw) return;
   const projectId = num(fd, "projectId");
   if (projectId != null && !(await owns(projects, projectId, uid))) return;
-  await db.insert(tasks).values({
-    userId: uid,
-    title,
-    projectId,
-    areaId: num(fd, "areaId"),
-    dueDate: str(fd, "dueDate"), // 없고 프로젝트도 없으면 자동으로 인박스
-  });
+  const areaId = num(fd, "areaId");
+  const dueDate = str(fd, "dueDate"); // 없고 프로젝트도 없으면 자동으로 인박스
+  // 줄바꿈으로 여러 줄을 붙여넣으면 줄마다 할 일이 생긴다 (앞머리 불릿 기호는 제거)
+  const titles = raw
+    .split(/\r?\n/)
+    .map((t) => t.replace(/^[-*•☐□✓]\s*/, "").trim())
+    .filter(Boolean)
+    .slice(0, 30);
+  if (titles.length === 0) return;
+  await db
+    .insert(tasks)
+    .values(titles.map((title) => ({ userId: uid, title, projectId, areaId, dueDate })));
   refresh();
 }
 

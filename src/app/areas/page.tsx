@@ -2,8 +2,9 @@ import { db, areas } from "@/db";
 import { asc, eq } from "drizzle-orm";
 import { createArea, updateArea, toggleAreaArchived } from "@/lib/actions";
 import { requireUserId } from "@/lib/session";
-import { Card, Empty, FieldLabel, PILLARS, SectionTitle, type Pillar } from "@/components/ui";
+import { Card, Empty, PILLARS, SectionTitle, type Pillar } from "@/components/ui";
 import { AreaCard } from "./area-card";
+import { NewAreaForm } from "./new-area-form";
 
 export const dynamic = "force-dynamic";
 
@@ -29,32 +30,14 @@ export default async function AreasPage() {
       <header>
         <h1 className="text-2xl font-bold">🚩 최종 목표</h1>
         <p className="mt-1 text-sm text-neutral-500">
-          일·삶·돈에서 내가 도달하려는 모습 — 여기서 세부 목표·프로젝트·노트가 뻗어나갑니다.
+          일과 삶, 그리고 자산. 내가 도달하려는 모습을 적어주세요. 최종 목표에서부터 세부 목표–프로젝트–할일로 뻗어나갑니다.
         </p>
       </header>
 
       <Card>
         <SectionTitle>새 영역 추가</SectionTitle>
-        {/* 상위 카테고리(Work·Life·Money 분류)부터 왼쪽에 배치 */}
-        <form action={createArea} className="flex flex-wrap items-end gap-2">
-          <label>
-            <FieldLabel>분류</FieldLabel>
-            <select name="pillar" defaultValue="life">
-              <option value="work">Work</option>
-              <option value="life">Life</option>
-              <option value="money">Money</option>
-            </select>
-          </label>
-          <label>
-            <FieldLabel>영역 이름</FieldLabel>
-            <input name="name" placeholder="영역 이름 (예: 건강)" required className="w-44" />
-          </label>
-          <label className="min-w-60 flex-1">
-            <FieldLabel>가이드라인</FieldLabel>
-            <input name="guideline" placeholder="이 영역에서 나는 어떤 사람이 되고 싶은가?" className="w-full" />
-          </label>
-          <button type="submit">추가</button>
-        </form>
+        {/* 분류를 고르면 이름·가이드라인 예시가 함께 바뀐다 */}
+        <NewAreaForm action={createArea} />
       </Card>
 
       {(["work", "life", "money"] as Pillar[]).map((pillar) => {
