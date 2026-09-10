@@ -4,7 +4,7 @@ import { dday, todayStr } from "@/lib/dates";
 import { PILLARS, type Pillar } from "@/components/ui";
 
 const KAKAO_URL = "https://open.kakao.com/o/goPP41Ki";
-const DEADLINE = "2026-09-07";
+const DEADLINE = "2026-09-13";
 
 function isClosed(): boolean {
   if (process.env.EARLYBIRD_CLOSED === "1") return true;
@@ -157,7 +157,7 @@ export function Landing() {
         <div className="mx-auto max-w-2xl space-y-6 px-4 pb-14 pt-14 text-center sm:pt-20">
           <div className="inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-4 py-1.5 text-sm font-semibold text-red-600">
             얼리버드 30명 한정
-            {!closed && d >= 0 && <span>· 9/7 마감 {d === 0 ? "D-day" : `D-${d}`}</span>}
+            {!closed && d >= 0 && <span>· 9/13 마감 {d === 0 ? "D-day" : `D-${d}`}</span>}
           </div>
           <h1 className="text-5xl font-extrabold leading-tight tracking-tight text-navy sm:text-6xl">
             멈추지 않는 <span className="text-brand">올해</span>
