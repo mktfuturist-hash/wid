@@ -5,8 +5,9 @@ import { redirect } from "next/navigation";
 import { and, eq, gte, lt } from "drizzle-orm";
 import {
   db, areas, goals, milestones, tasks, projects, kpis, routines, routineLogs,
-  moneyAccounts, moneySnapshots, moneyTxns, notes, reviews,
+  moneyAccounts, moneySnapshots, moneyTxns, notes, reviews, shortLinks, linkClicks,
 } from "@/db";
+import { randomBytes } from "crypto";
 import { monthStr, todayStr } from "@/lib/dates";
 import { isAdmin, requireUserId } from "@/lib/session";
 import { users } from "@/db/schema";
@@ -43,6 +44,43 @@ async function owns(
 
 export async function logout() {
   await signOut({ redirectTo: "/" });
+}
+
+// ── 어드민: UTM 숏링크 ──
+/** UTM 숏링크 생성 (어드민 전용) */
+export async function createShortLink(fd: FormData) {
+  if (!(await isAdmin())) return;
+  const uid = await requireUserId();
+  const targetPath = str(fd, "targetPath") ?? "/landing";
+  if (!targetPath.startsWith("/")) return; // 내부 경로만 허용
+  // 짧고 URL-safe한 6자 코드, 충돌 시 재시도
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const code = randomBytes(4).toString("base64url").replace(/[-_]/g, "z").slice(0, 6);
+    try {
+      await db.insert(shortLinks).values({
+        userId: uid,
+        code,
+        targetPath,
+        utmSource: str(fd, "utmSource"),
+        utmMedium: str(fd, "utmMedium"),
+        utmCampaign: str(fd, "utmCampaign"),
+        utmContent: str(fd, "utmContent"),
+        note: str(fd, "note"),
+      });
+      break;
+    } catch {
+      if (attempt === 4) throw new Error("숏링크 코드 생성 실패");
+    }
+  }
+  refresh();
+}
+
+/** 숏링크 삭제 — 클릭 로그도 함께 (어드민 전용) */
+export async function deleteShortLink(id: number) {
+  if (!(await isAdmin())) return;
+  await db.delete(linkClicks).where(eq(linkClicks.linkId, id));
+  await db.delete(shortLinks).where(eq(shortLinks.id, id));
+  refresh();
 }
 
 // ── 어드민 ──

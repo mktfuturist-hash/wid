@@ -21,7 +21,36 @@ export const users = pgTable("users", {
   privacyPolicyVersion: text("privacy_policy_version"),
   /* 관리자 플래그 — /admin 접근 권한. 환경변수 대신 DB로 판별한다 */
   isAdmin: boolean("is_admin").notNull().default(false),
+  /* 유입 추적 — 첫 가입 시 타고 들어온 숏링크 코드 (퍼스트터치, 이후 로그인에 덮이지 않음) */
+  signupLinkCode: text("signup_link_code"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// ── UTM 숏링크: 어드민이 만드는 유입 추적 링크 (/l/{code} → 타겟+UTM 리다이렉트) ──
+export const shortLinks = pgTable("short_links", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id")
+    .notNull()
+    .references(() => users.id),
+  code: text("code").notNull().unique(),
+  targetPath: text("target_path").notNull().default("/landing"),
+  utmSource: text("utm_source"),
+  utmMedium: text("utm_medium"),
+  utmCampaign: text("utm_campaign"),
+  utmContent: text("utm_content"),
+  /* 어디에 뿌렸는지 메모 — 나중에 성과와 붙이기 위한 기록 */
+  note: text("note"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// ── 숏링크 클릭 로그: 익명 집계용 (개인정보 없음 — 시각·리퍼러만) ──
+export const linkClicks = pgTable("link_clicks", {
+  id: serial("id").primaryKey(),
+  linkId: integer("link_id")
+    .notNull()
+    .references(() => shortLinks.id),
+  clickedAt: timestamp("clicked_at").notNull().defaultNow(),
+  referer: text("referer"),
 });
 
 // ── 영역: 최상위 카테고리. pillar = Work/Life/Money 3기둥 ──

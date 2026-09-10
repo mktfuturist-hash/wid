@@ -12,7 +12,11 @@ const PUBLIC_PATHS = ["/", "/landing", "/guide", "/privacy", "/login"];
 export async function middleware(req: NextRequest) {
   if (!authEnabled) return NextResponse.next();
   const { pathname } = req.nextUrl;
-  if (PUBLIC_PATHS.includes(pathname) || pathname.startsWith("/api/auth")) {
+  if (
+    PUBLIC_PATHS.includes(pathname) ||
+    pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/l/") // UTM 숏링크 리다이렉트 — 비로그인도 통과
+  ) {
     return NextResponse.next();
   }
   const session = await auth();
