@@ -157,6 +157,82 @@ export async function createUtmChannel(fd: FormData) {
   refresh();
 }
 
+/* 처음 한 번 채워 넣는 채널 프리셋.
+
+   source = **어느 사람들이 있는 곳인가** (spongeclub · alumni · instagram · friends)
+   medium = **어떤 형태로 닿았나** (slack · kakao_group · kakao_dm · post · profile_link)
+
+   프리셋을 늘리지 않는 게 핵심이다. 슬랙 채널이 셋이어도 프리셋은 하나만 쓰고
+   utm_content 로 가른다 (net_channel · team2 · notice). 프리셋이 스무 개가 되면
+   같은 곳이 두 이름으로 갈려서 대시보드가 조각난다. */
+const DEFAULT_CHANNELS = [
+  {
+    name: "스폰지클럽 슬랙",
+    source: "spongeclub",
+    medium: "slack",
+    slug: "sc-sl",
+    hint: "채널 구분은 content 로 (net_channel · team2 · notice). 크루 유입이라 페르소나와는 다름",
+  },
+  {
+    name: "강의 동기 단톡방",
+    source: "alumni",
+    medium: "kakao_group",
+    slug: "al-kk",
+    hint: "2회차에 정한 본진. 그 방 사람들의 문제에서 시작하는 글로",
+  },
+  {
+    name: "지인 1:1",
+    source: "friends",
+    medium: "kakao_dm",
+    slug: "fr-dm",
+    hint: "링크만 던지지 말고 '카톡방에 들어오시면 시작돼요'를 함께",
+  },
+  {
+    name: "인스타 게시물",
+    source: "instagram",
+    medium: "post",
+    slug: "ig-po",
+    hint: "소재별로 content 를 나눠야 뭐가 먹혔는지 보인다",
+  },
+  {
+    name: "인스타 프로필 링크",
+    source: "instagram",
+    medium: "profile_link",
+    slug: "ig-bio",
+    hint: "고정 링크. 게시물과 반드시 분리",
+  },
+  {
+    name: "오프라인 모임",
+    source: "offline",
+    medium: "qr",
+    slug: "of-qr",
+    hint: "QR 로 뿌릴 때. 짧은 코드로",
+  },
+];
+
+/** 채널 프리셋 기본 6종 채우기 (어드민 전용) — 이미 있는 건 건너뛴다 */
+export async function seedUtmChannels() {
+  if (!(await isAdmin())) return;
+  const uid = await requireUserId();
+  const mine = await db.select().from(utmChannels).where(eq(utmChannels.userId, uid));
+  const taken = new Set(mine.map((c) => `${c.source}|${c.medium}`));
+
+  const rows = DEFAULT_CHANNELS.filter(
+    (c) => !taken.has(`${slugify(c.source)}|${slugify(c.medium)}`)
+  ).map((c, i) => ({
+    userId: uid,
+    name: c.name,
+    source: slugify(c.source),
+    medium: slugify(c.medium),
+    slug: slugify(c.slug),
+    hint: c.hint,
+    sort: i,
+  }));
+
+  if (rows.length) await db.insert(utmChannels).values(rows);
+  refresh();
+}
+
 /** UTM 채널 보관/복원 (어드민 전용) */
 export async function setChannelArchived(id: number, archived: boolean) {
   if (!(await isAdmin())) return;

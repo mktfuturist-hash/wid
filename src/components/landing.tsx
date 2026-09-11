@@ -3,7 +3,7 @@ import Link from "next/link";
 import { dday, todayStr } from "@/lib/dates";
 import { PILLARS, type Pillar } from "@/components/ui";
 
-const KAKAO_URL = "https://open.kakao.com/o/goPP41Ki";
+import { KAKAO_CTA } from "@/lib/links";
 const DEADLINE = "2026-09-13";
 
 function isClosed(): boolean {
@@ -46,7 +46,7 @@ function Cta({ closed }: { closed: boolean }) {
   return (
     <div className="text-center">
       <a
-        href={KAKAO_URL}
+        href={KAKAO_CTA}
         target="_blank"
         rel="noreferrer"
         className="inline-block w-full max-w-sm rounded-xl bg-brand px-8 py-4 text-lg font-bold text-white shadow-lg shadow-brand/25 transition hover:bg-[#0086d6]"
@@ -140,7 +140,7 @@ export function Landing() {
             </Link>
             {!closed && (
               <a
-                href={KAKAO_URL}
+                href={KAKAO_CTA}
                 target="_blank"
                 rel="noreferrer"
                 className="rounded-lg bg-brand px-3.5 py-1.5 text-sm font-bold text-white shadow-sm transition hover:bg-[#0086d6]"

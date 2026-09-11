@@ -6,7 +6,7 @@ import { users } from "@/db/schema";
 import { isAdmin, requireUserId } from "@/lib/session";
 import {
   adminDeleteUser, createUtmLinks, setLinkArchived, deleteShortLink,
-  createUtmChannel, setChannelArchived,
+  createUtmChannel, setChannelArchived, seedUtmChannels,
 } from "@/lib/actions";
 import { Card, SectionTitle } from "@/components/ui";
 import { ConfirmButton } from "@/components/confirm-button";
@@ -125,6 +125,7 @@ export default async function AdminPage() {
         deleteLinkAction={deleteShortLink}
         createChannelAction={createUtmChannel}
         archiveChannelAction={setChannelArchived}
+        seedChannelsAction={seedUtmChannels}
       />
 
       <Card>

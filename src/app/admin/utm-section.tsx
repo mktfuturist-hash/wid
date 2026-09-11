@@ -43,6 +43,7 @@ export function UtmSection({
   deleteLinkAction,
   createChannelAction,
   archiveChannelAction,
+  seedChannelsAction,
 }: {
   channels: UtmChannelData[];
   rows: UtmLinkRow[];
@@ -52,6 +53,7 @@ export function UtmSection({
   deleteLinkAction: (id: number) => Promise<void>;
   createChannelAction: (fd: FormData) => Promise<void>;
   archiveChannelAction: (id: number, archived: boolean) => Promise<void>;
+  seedChannelsAction: () => Promise<void>;
 }) {
   const [selected, setSelected] = useState<number[]>([]);
   const [content, setContent] = useState("");
@@ -221,6 +223,29 @@ export function UtmSection({
               <label className="min-w-40 flex-1"><FieldLabel>팁 한 줄</FieldLabel><input name="hint" className="w-full" /></label>
               <button type="submit" className="btn">채널 추가</button>
             </form>
+
+            <div className="mt-2 flex flex-wrap items-center gap-2 border-t border-dashed border-neutral-200 pt-2">
+              <button
+                type="button"
+                className="btn"
+                onClick={() => startTransition(async () => { await seedChannelsAction(); })}
+              >
+                기본 프리셋 6종 채우기
+              </button>
+              <span className="text-xs text-neutral-400">
+                스폰지클럽 슬랙 · 강의 동기 단톡방 · 지인 1:1 · 인스타 게시물 · 인스타 프로필 · 오프라인 QR
+                <span className="ml-1 text-neutral-300">(이미 있는 건 건너뜁니다)</span>
+              </span>
+            </div>
+
+            <p className="mt-2 text-xs leading-relaxed text-neutral-400">
+              프리셋은 <b className="text-neutral-500">적게 유지하는 게 좋습니다.</b> 슬랙 채널이 여러 개여도
+              채널을 새로 만들지 말고 하나를 고른 뒤 <code className="rounded bg-neutral-100 px-1">content</code> 로
+              가르세요 — <code className="rounded bg-neutral-100 px-1">net_channel</code>{" "}
+              <code className="rounded bg-neutral-100 px-1">team2</code>{" "}
+              <code className="rounded bg-neutral-100 px-1">notice</code> 처럼요.
+              같은 곳이 두 이름으로 갈리면 대시보드가 조각납니다.
+            </p>
             {channels.some((c) => c.archived) || activeChannels.length > 0 ? (
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {channels.map((c) => (
