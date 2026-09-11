@@ -6,7 +6,7 @@ import { createGoal, deleteGoal } from "@/lib/actions";
 import { requireUserId } from "@/lib/session";
 import { ddayLabel, fmtDate } from "@/lib/dates";
 import {
-  AreaChip, Card, DdayBadge, Empty, FieldLabel, PillarDot, ProgressBar, SectionTitle,
+  AreaChip, Card, DdayBadge, Empty, FieldLabel, PillarDot, ProgressBar, SectionTitle, SmartDate,
 } from "@/components/ui";
 import { ConfirmButton } from "@/components/confirm-button";
 
@@ -100,7 +100,7 @@ export default async function GoalsPage() {
                       <span className="truncate font-semibold">{g.title}</span>
                     </div>
                     <div className="relative z-10 flex shrink-0 items-center gap-2 text-xs text-neutral-500">
-                      {g.dueDate && <span>{fmtDate(g.dueDate)}</span>}
+                      {g.dueDate && <span><SmartDate date={g.dueDate} /></span>}
                       <DdayBadge label={ddayLabel(g.dueDate, false)} />
                       <Link
                         href={`/goals/${g.id}`}
@@ -139,7 +139,7 @@ export default async function GoalsPage() {
                             {m.title}
                           </span>
                           {m.dueDate && (
-                            <span className="tabular-nums text-neutral-400">{fmtDate(m.dueDate)}</span>
+                            <span className="tabular-nums text-neutral-400"><SmartDate date={m.dueDate} /></span>
                           )}
                         </li>
                       ))}

@@ -4,7 +4,7 @@ import { and, eq } from "drizzle-orm";
 import { db, reviews } from "@/db";
 import { requireUserId } from "@/lib/session";
 import { updateReview, deleteReview } from "@/lib/actions";
-import { fmtDate } from "@/lib/dates";
+import { addDays, fmtDate, fmtDateShort } from "@/lib/dates";
 import { ReviewEditor } from "./review-editor";
 
 export const dynamic = "force-dynamic";
@@ -36,6 +36,11 @@ export default async function ReviewDetail({
       <header>
         <h1 className="text-2xl font-bold">
           {fmtDate(r.date)} <span className="text-lg text-neutral-400">{SCOPE_LABEL[r.scope]}</span>
+          {r.scope === "weekly" && (
+            <span className="ml-2 text-base font-medium text-neutral-400">
+              {fmtDateShort(r.date)}–{fmtDateShort(addDays(r.date, 6))}
+            </span>
+          )}
         </h1>
       </header>
 

@@ -1,4 +1,16 @@
 import type { ReactNode } from "react";
+import { fmtDate, fmtDateShort } from "@/lib/dates";
+
+/** 날짜 표기 — 모바일에선 9/6, sm 이상에선 2026.09.06 */
+export function SmartDate({ date }: { date: string | null }) {
+  if (!date) return null;
+  return (
+    <>
+      <span className="sm:hidden">{fmtDateShort(date)}</span>
+      <span className="hidden sm:inline">{fmtDate(date)}</span>
+    </>
+  );
+}
 
 export const PILLARS = {
   work: { label: "Work", icon: "💼", color: "text-work-ink", bar: "bg-work", chip: "bg-work-tint text-work-ink border-work-line" },

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { fmtDate } from "@/lib/dates";
+import { SmartDate } from "@/components/ui";
 
 type Milestone = {
   id: number;
@@ -63,7 +63,7 @@ export function MilestoneRow({
         {m.title}
       </span>
       {m.dueDate && (
-        <span className="text-xs tabular-nums text-neutral-400">{fmtDate(m.dueDate)}</span>
+        <span className="text-xs tabular-nums text-neutral-400"><SmartDate date={m.dueDate} /></span>
       )}
       <button
         type="button"

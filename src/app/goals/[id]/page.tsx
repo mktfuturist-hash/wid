@@ -14,7 +14,7 @@ import { GoalSettings } from "./goal-settings";
 import { ConfirmButton } from "@/components/confirm-button";
 import { getGoalsWithProgress } from "@/lib/progress";
 import { ddayLabel, fmtDate } from "@/lib/dates";
-import { AreaChip, Card, DdayBadge, Empty, FieldLabel, ProgressBar, SectionTitle } from "@/components/ui";
+import { AreaChip, Card, DdayBadge, Empty, FieldLabel, ProgressBar, SectionTitle, SmartDate } from "@/components/ui";
 
 const METRIC_LABEL: Record<string, string> = {
   milestone: "중간 목표 체크",
@@ -131,7 +131,9 @@ export default async function GoalDetail({
                       📁 {p.title}
                     </Link>
                     <span className="shrink-0 text-xs text-neutral-400">
-                      {p.startDate && p.endDate && `${fmtDate(p.startDate)} ~ ${fmtDate(p.endDate)} · `}
+                      {p.startDate && p.endDate && (
+                        <><SmartDate date={p.startDate} />~<SmartDate date={p.endDate} /> · </>
+                      )}
                       할 일 {doneCnt}/{pts.length}
                     </span>
                   </div>
@@ -159,7 +161,7 @@ export default async function GoalDetail({
                               {t.title}
                             </span>
                             {t.dueDate && (
-                              <span className="shrink-0 text-xs tabular-nums text-neutral-400">{fmtDate(t.dueDate)}</span>
+                              <span className="shrink-0 text-xs tabular-nums text-neutral-400"><SmartDate date={t.dueDate} /></span>
                             )}
                           </li>
                         ))}

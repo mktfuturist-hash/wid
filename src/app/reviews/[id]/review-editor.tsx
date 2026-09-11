@@ -70,7 +70,7 @@ export function ReviewEditor({
               name="planMd"
               defaultValue={planMd}
               rows={18}
-              className="w-full font-mono text-sm leading-relaxed"
+              className="w-full text-sm leading-relaxed"
             />
           ) : (
             <>
@@ -94,7 +94,7 @@ export function ReviewEditor({
               name="retroMd"
               defaultValue={retroMd}
               rows={18}
-              className="w-full font-mono text-sm leading-relaxed"
+              className="w-full text-sm leading-relaxed"
             />
           ) : (
             <>
