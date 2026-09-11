@@ -26,6 +26,23 @@ export const users = pgTable("users", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+// ── UTM 채널 프리셋: 뿌리는 곳(스레드·인스타·오카방…)을 카드로 관리 ──
+export const utmChannels = pgTable("utm_channels", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id")
+    .notNull()
+    .references(() => users.id),
+  name: text("name").notNull(),
+  source: text("source").notNull(),
+  medium: text("medium").notNull(),
+  /* 숏링크 코드 접두어 (예: th-post → /l/th-post-reel02) */
+  slug: text("slug").notNull(),
+  /* 이 채널에 링크 걸 때의 팁 한 줄 */
+  hint: text("hint"),
+  sort: integer("sort").notNull().default(0),
+  archived: boolean("archived").notNull().default(false),
+});
+
 // ── UTM 숏링크: 어드민이 만드는 유입 추적 링크 (/l/{code} → 타겟+UTM 리다이렉트) ──
 export const shortLinks = pgTable("short_links", {
   id: serial("id").primaryKey(),
@@ -40,6 +57,11 @@ export const shortLinks = pgTable("short_links", {
   utmContent: text("utm_content"),
   /* 어디에 뿌렸는지 메모 — 나중에 성과와 붙이기 위한 기록 */
   note: text("note"),
+  /* 채널 프리셋으로 만든 링크면 그 채널 */
+  channelId: integer("channel_id").references(() => utmChannels.id),
+  /* 만든 사람 (팀으로 쓸 때 구분용) */
+  creator: text("creator"),
+  archived: boolean("archived").notNull().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 

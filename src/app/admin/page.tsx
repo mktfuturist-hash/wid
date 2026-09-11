@@ -1,14 +1,16 @@
 import { notFound } from "next/navigation";
 import { headers } from "next/headers";
 import { asc, desc, sql } from "drizzle-orm";
-import { db, goals, projects, tasks, routines, shortLinks, linkClicks } from "@/db";
+import { db, goals, projects, tasks, routines, shortLinks, linkClicks, utmChannels } from "@/db";
 import { users } from "@/db/schema";
 import { isAdmin, requireUserId } from "@/lib/session";
-import { adminDeleteUser, createShortLink, deleteShortLink } from "@/lib/actions";
-import { fmtDate } from "@/lib/dates";
-import { Card, FieldLabel, SectionTitle } from "@/components/ui";
+import {
+  adminDeleteUser, createUtmLinks, setLinkArchived, deleteShortLink,
+  createUtmChannel, setChannelArchived,
+} from "@/lib/actions";
+import { Card, SectionTitle } from "@/components/ui";
 import { ConfirmButton } from "@/components/confirm-button";
-import { CopyButton } from "@/components/copy-button";
+import { UtmSection, type UtmChannelData, type UtmLinkRow } from "./utm-section";
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +26,7 @@ export default async function AdminPage() {
   if (!(await isAdmin())) notFound();
   const myId = await requireUserId();
 
-  const [userList, goalCnt, projectCnt, taskCnt, routineCnt, links, clickRows] = await Promise.all([
+  const [userList, goalCnt, projectCnt, taskCnt, routineCnt, links, clickRows, channelList] = await Promise.all([
     db.select().from(users).orderBy(asc(users.id)),
     countByUser(goals),
     countByUser(projects),
@@ -35,6 +37,7 @@ export default async function AdminPage() {
       .select({ linkId: linkClicks.linkId, c: sql<number>`count(*)::int` })
       .from(linkClicks)
       .groupBy(linkClicks.linkId),
+    db.select().from(utmChannels).orderBy(asc(utmChannels.sort), asc(utmChannels.id)),
   ]);
   const clicksOf = new Map(clickRows.map((r) => [r.linkId, r.c]));
   // 링크별 가입 수: users.signup_link_code로 집계 (퍼스트터치)
@@ -42,18 +45,38 @@ export default async function AdminPage() {
   for (const u of userList) {
     if (u.signupLinkCode) signupsOf.set(u.signupLinkCode, (signupsOf.get(u.signupLinkCode) ?? 0) + 1);
   }
-  // 채널(utm_source)별 요약
-  const bySource = new Map<string, { clicks: number; signups: number }>();
-  for (const l of links) {
-    const key = l.utmSource ?? "(소스 없음)";
-    const agg = bySource.get(key) ?? { clicks: 0, signups: 0 };
-    agg.clicks += clicksOf.get(l.id) ?? 0;
-    agg.signups += signupsOf.get(l.code) ?? 0;
-    bySource.set(key, agg);
-  }
   const host = (await headers()).get("host") ?? "wid-planner.vercel.app";
   const origin = `${host.startsWith("localhost") ? "http" : "https"}://${host}`;
-  const pct = (a: number, b: number) => (b > 0 ? `${Math.round((a / b) * 100)}%` : "—");
+
+  // UtmSection에 넘길 직렬화 데이터
+  const linkCountOf = new Map<number, number>();
+  for (const l of links) {
+    if (l.channelId != null) linkCountOf.set(l.channelId, (linkCountOf.get(l.channelId) ?? 0) + 1);
+  }
+  const utmChannelData: UtmChannelData[] = channelList.map((c) => ({
+    id: c.id,
+    name: c.name,
+    source: c.source,
+    medium: c.medium,
+    slug: c.slug,
+    hint: c.hint,
+    archived: c.archived,
+    linkCount: linkCountOf.get(c.id) ?? 0,
+  }));
+  const utmRows: UtmLinkRow[] = links.map((l) => ({
+    id: l.id,
+    code: l.code,
+    channelId: l.channelId,
+    channelName: channelList.find((c) => c.id === l.channelId)?.name ?? l.utmSource ?? "직접 입력",
+    content: l.utmContent,
+    note: l.note,
+    creator: l.creator,
+    targetPath: l.targetPath,
+    clicks: clicksOf.get(l.id) ?? 0,
+    signups: signupsOf.get(l.code) ?? 0,
+    archived: l.archived,
+    createdAt: l.createdAt.toISOString().slice(0, 10),
+  }));
 
   const weekAgo = Date.now() - 7 * 86400000;
   const newThisWeek = userList.filter((u) => u.createdAt.getTime() >= weekAgo).length;
@@ -92,119 +115,17 @@ export default async function AdminPage() {
         ))}
       </div>
 
-      {/* 🔗 UTM 빌더 — 뿌리는 링크마다 꼬리표를 붙여 숏링크로 만든다 */}
-      <Card>
-        <SectionTitle>🔗 UTM 링크 빌더</SectionTitle>
-        <form action={createShortLink} className="flex flex-wrap items-end gap-2">
-          <label>
-            <FieldLabel>타겟 경로</FieldLabel>
-            <input name="targetPath" defaultValue="/landing" className="w-32" />
-          </label>
-          <label>
-            <FieldLabel>utm_source (어디에)</FieldLabel>
-            <input name="utmSource" placeholder="kakao_openchat" required className="w-40" />
-          </label>
-          <label>
-            <FieldLabel>utm_medium (형태)</FieldLabel>
-            <input name="utmMedium" placeholder="post · dm" className="w-32" />
-          </label>
-          <label>
-            <FieldLabel>utm_campaign (건)</FieldLabel>
-            <input name="utmCampaign" placeholder="0913_launch" className="w-32" />
-          </label>
-          <label>
-            <FieldLabel>utm_content (구분)</FieldLabel>
-            <input name="utmContent" placeholder="image_a" className="w-28" />
-          </label>
-          <label className="min-w-40 flex-1">
-            <FieldLabel>메모 — 정확히 어디에 뿌렸나</FieldLabel>
-            <input name="note" placeholder="예: ○○ 오픈카톡방 (300명)" className="w-full" />
-          </label>
-          <button type="submit">링크 생성</button>
-        </form>
-        <p className="mt-2 text-xs text-neutral-400">
-          뿌리는 곳마다 링크를 따로 만드세요 — 같은 링크를 세 군데 던지면 세 군데를 구분할 수 없어요.
-        </p>
-      </Card>
-
-      {/* 📈 성과 대시보드 — 링크별 클릭·가입·전환율, 채널 비교 */}
-      <Card>
-        <SectionTitle>📈 링크 성과 대시보드</SectionTitle>
-        {links.length === 0 ? (
-          <p className="py-4 text-center text-sm text-neutral-400">
-            아직 링크가 없어요 — 위에서 첫 UTM 링크를 만들어 보세요.
-          </p>
-        ) : (
-          <>
-            {/* 채널(utm_source)별 요약 */}
-            <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {[...bySource.entries()].map(([source, agg]) => (
-                <div key={source} className="rounded-lg border border-neutral-100 p-3 text-center">
-                  <div className="truncate text-xs font-medium text-neutral-500">{source}</div>
-                  <div className="mt-1 text-lg font-bold tabular-nums">
-                    {agg.clicks}<span className="text-xs font-normal text-neutral-400"> 클릭</span>
-                    {" · "}
-                    {agg.signups}<span className="text-xs font-normal text-neutral-400"> 가입</span>
-                  </div>
-                  <div className="text-xs text-neutral-400">전환율 {pct(agg.signups, agg.clicks)}</div>
-                </div>
-              ))}
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-neutral-200 text-left text-xs text-neutral-400">
-                    <th className="py-2 pr-3 font-medium">숏링크</th>
-                    <th className="py-2 pr-3 font-medium">UTM</th>
-                    <th className="py-2 pr-3 font-medium">어디에 뿌렸나</th>
-                    <th className="py-2 pr-3 font-medium">생성일</th>
-                    <th className="py-2 pr-3 text-right font-medium">클릭</th>
-                    <th className="py-2 pr-3 text-right font-medium">가입</th>
-                    <th className="py-2 pr-3 text-right font-medium">전환율</th>
-                    <th className="py-2 font-medium" />
-                  </tr>
-                </thead>
-                <tbody>
-                  {links.map((l) => {
-                    const clicks = clicksOf.get(l.id) ?? 0;
-                    const signups = signupsOf.get(l.code) ?? 0;
-                    const shortUrl = `${origin}/l/${l.code}`;
-                    return (
-                      <tr key={l.id} className="border-b border-neutral-100 align-top">
-                        <td className="py-2 pr-3 whitespace-nowrap">
-                          <span className="font-mono text-xs">/l/{l.code}</span>
-                          <span className="ml-1.5 inline-block"><CopyButton text={shortUrl} /></span>
-                        </td>
-                        <td className="py-2 pr-3 text-xs text-neutral-500">
-                          {[l.utmSource, l.utmMedium, l.utmCampaign, l.utmContent].filter(Boolean).join(" · ") || "—"}
-                          <div className="text-[11px] text-neutral-300">→ {l.targetPath}</div>
-                        </td>
-                        <td className="max-w-40 py-2 pr-3 text-xs text-neutral-500">{l.note ?? "—"}</td>
-                        <td className="py-2 pr-3 whitespace-nowrap text-xs tabular-nums text-neutral-400">
-                          {fmtDate(l.createdAt.toISOString().slice(0, 10))}
-                        </td>
-                        <td className="py-2 pr-3 text-right tabular-nums">{clicks}</td>
-                        <td className="py-2 pr-3 text-right font-semibold tabular-nums">{signups}</td>
-                        <td className="py-2 pr-3 text-right tabular-nums text-neutral-500">{pct(signups, clicks)}</td>
-                        <td className="py-2 text-right">
-                          <form action={deleteShortLink.bind(null, l.id)}>
-                            <ConfirmButton
-                              message={`/l/${l.code} 링크를 삭제할까요? 클릭 기록도 함께 지워집니다.`}
-                              className="cursor-pointer text-xs text-neutral-300 hover:text-red-500"
-                            >
-                              삭제
-                            </ConfirmButton>
-                          </form>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </>
-        )}
-      </Card>
+      {/* UTM 링크 만들기 + 장부 */}
+      <UtmSection
+        channels={utmChannelData}
+        rows={utmRows}
+        origin={origin}
+        createAction={createUtmLinks}
+        archiveLinkAction={setLinkArchived}
+        deleteLinkAction={deleteShortLink}
+        createChannelAction={createUtmChannel}
+        archiveChannelAction={setChannelArchived}
+      />
 
       <Card>
         <SectionTitle>사용자 ({userList.length})</SectionTitle>

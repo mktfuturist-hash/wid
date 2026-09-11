@@ -2,10 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { and, eq, gte, lt } from "drizzle-orm";
+import { and, eq, gte, inArray, lt } from "drizzle-orm";
 import {
   db, areas, goals, milestones, tasks, projects, kpis, routines, routineLogs,
-  moneyAccounts, moneySnapshots, moneyTxns, notes, reviews, shortLinks, linkClicks,
+  moneyAccounts, moneySnapshots, moneyTxns, notes, reviews, shortLinks, linkClicks, utmChannels,
 } from "@/db";
 import { randomBytes } from "crypto";
 import { monthStr, todayStr } from "@/lib/dates";
@@ -47,31 +47,85 @@ export async function logout() {
 }
 
 // ── 어드민: UTM 숏링크 ──
-/** UTM 숏링크 생성 (어드민 전용) */
-export async function createShortLink(fd: FormData) {
-  if (!(await isAdmin())) return;
+/* 코드 정리: 소문자·숫자·하이픈만 */
+function slugify(s: string): string {
+  return s
+    .toLowerCase()
+    .replace(/[^a-z0-9-]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 40);
+}
+
+/** 선택한 채널들에 같은 소재로 링크를 일괄 생성. 만든 코드 목록을 돌려준다 (어드민 전용) */
+export async function createUtmLinks(fd: FormData): Promise<{ codes: string[] }> {
+  if (!(await isAdmin())) return { codes: [] };
   const uid = await requireUserId();
   const targetPath = str(fd, "targetPath") ?? "/landing";
-  if (!targetPath.startsWith("/")) return; // 내부 경로만 허용
-  // 짧고 URL-safe한 6자 코드, 충돌 시 재시도
-  for (let attempt = 0; attempt < 5; attempt++) {
-    const code = randomBytes(4).toString("base64url").replace(/[-_]/g, "z").slice(0, 6);
-    try {
-      await db.insert(shortLinks).values({
-        userId: uid,
-        code,
-        targetPath,
-        utmSource: str(fd, "utmSource"),
-        utmMedium: str(fd, "utmMedium"),
-        utmCampaign: str(fd, "utmCampaign"),
-        utmContent: str(fd, "utmContent"),
-        note: str(fd, "note"),
+  if (!targetPath.startsWith("/")) return { codes: [] };
+  const content = str(fd, "content");
+  const memo = str(fd, "memo");
+  const creator = str(fd, "creator");
+  const campaign = str(fd, "campaign");
+  const channelIds = fd
+    .getAll("channelIds")
+    .map((v) => Number(v))
+    .filter((n) => Number.isInteger(n));
+
+  // 채널 없이 직접 입력(고급) 모드
+  const customSource = str(fd, "customSource");
+  const plans: {
+    base: string; source: string | null; medium: string | null; channelId: number | null; name: string;
+  }[] = [];
+  if (channelIds.length > 0) {
+    const chs = await db.select().from(utmChannels).where(inArray(utmChannels.id, channelIds));
+    for (const ch of chs) {
+      plans.push({
+        base: content ? `${ch.slug}-${slugify(content)}` : ch.slug,
+        source: ch.source,
+        medium: ch.medium,
+        channelId: ch.id,
+        name: ch.name,
       });
-      break;
-    } catch {
-      if (attempt === 4) throw new Error("숏링크 코드 생성 실패");
+    }
+  } else if (customSource) {
+    const base = slugify(`${customSource}${content ? `-${content}` : ""}`) || randomBytes(3).toString("hex");
+    plans.push({ base, source: customSource, medium: str(fd, "customMedium"), channelId: null, name: customSource });
+  }
+
+  const codes: string[] = [];
+  for (const p of plans) {
+    // 같은 코드가 있으면 -2, -3 … 붙여서 유니크하게
+    for (let n = 0; n < 20; n++) {
+      const code = n === 0 ? p.base : `${p.base}-${n + 1}`;
+      try {
+        await db.insert(shortLinks).values({
+          userId: uid,
+          code,
+          targetPath,
+          utmSource: p.source,
+          utmMedium: p.medium,
+          utmCampaign: campaign,
+          utmContent: content,
+          note: memo ?? `${p.name}${content ? ` · ${content}` : ""}`,
+          channelId: p.channelId,
+          creator,
+        });
+        codes.push(code);
+        break;
+      } catch {
+        if (n === 19) throw new Error("숏링크 코드 생성 실패");
+      }
     }
   }
+  refresh();
+  return { codes };
+}
+
+/** 숏링크 보관/복원 (어드민 전용) */
+export async function setLinkArchived(id: number, archived: boolean) {
+  if (!(await isAdmin())) return;
+  await db.update(shortLinks).set({ archived }).where(eq(shortLinks.id, id));
   refresh();
 }
 
@@ -80,6 +134,33 @@ export async function deleteShortLink(id: number) {
   if (!(await isAdmin())) return;
   await db.delete(linkClicks).where(eq(linkClicks.linkId, id));
   await db.delete(shortLinks).where(eq(shortLinks.id, id));
+  refresh();
+}
+
+/** UTM 채널 프리셋 추가 (어드민 전용) */
+export async function createUtmChannel(fd: FormData) {
+  if (!(await isAdmin())) return;
+  const uid = await requireUserId();
+  const name = str(fd, "name");
+  const source = str(fd, "source");
+  const medium = str(fd, "medium");
+  if (!name || !source || !medium) return;
+  await db.insert(utmChannels).values({
+    userId: uid,
+    name,
+    source: slugify(source),
+    medium: slugify(medium),
+    slug: slugify(str(fd, "slug") ?? `${source}-${medium}`) || slugify(source),
+    hint: str(fd, "hint"),
+    sort: 99,
+  });
+  refresh();
+}
+
+/** UTM 채널 보관/복원 (어드민 전용) */
+export async function setChannelArchived(id: number, archived: boolean) {
+  if (!(await isAdmin())) return;
+  await db.update(utmChannels).set({ archived }).where(eq(utmChannels.id, id));
   refresh();
 }
 
