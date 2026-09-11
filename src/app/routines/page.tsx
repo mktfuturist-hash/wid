@@ -41,6 +41,12 @@ export default async function RoutinesPage() {
   const statsOf = (id: number) =>
     computeRoutineStats(logs.filter((l) => l.routineId === id).map((l) => l.loggedAt));
 
+  // 우측 미니 히트맵용 최근 28일 날짜 (과거→오늘, KST)
+  const t0 = new Date(todayStr() + "T00:00:00+09:00").getTime();
+  const miniDates = Array.from({ length: 28 }, (_, i) =>
+    toKstDate(new Date(t0 - (27 - i) * 86400000))
+  );
+
   const totalThisMonth = active.reduce((s, r) => s + statsOf(r.id).monthCount, 0);
   const totalAll = logs.length;
 
@@ -154,17 +160,25 @@ export default async function RoutinesPage() {
                         )}
                       </div>
                     </div>
-                    {/* 상시 루틴은 최근 28일 히트맵 (기간 루틴은 아래 기간 전체 히트맵) */}
-                    {!hasPeriod && (
-                      <div className="hidden gap-0.5 sm:grid" style={{ gridTemplateColumns: "repeat(14, 8px)" }}>
-                        {st.last28.map((on, i) => (
+                    {/* 최근 28일 미니 히트맵 — 기간 루틴도 동일하게, 기간 밖 날짜만 흐리게 */}
+                    <div className="hidden gap-0.5 sm:grid" style={{ gridTemplateColumns: "repeat(14, 8px)" }}>
+                      {miniDates.map((d) => {
+                        const outOfPeriod = hasPeriod && (d < r.startDate! || d > r.endDate!);
+                        return (
                           <div
-                            key={i}
-                            className={`h-2 w-2 rounded-[2px] ${on ? "bg-emerald-400" : "bg-neutral-200/70"}`}
+                            key={d}
+                            title={fmtDate(d)}
+                            className={`h-2 w-2 rounded-[2px] ${
+                              daySet.has(d)
+                                ? "bg-emerald-400"
+                                : outOfPeriod
+                                  ? "bg-neutral-100"
+                                  : "bg-neutral-200/70"
+                            }`}
                           />
-                        ))}
-                      </div>
-                    )}
+                        );
+                      })}
+                    </div>
                     <div className="flex flex-col items-end gap-1">
                       <form action={setRoutineStatus.bind(null, r.id, "stopped")}>
                         <button className="text-xs text-neutral-300 hover:text-neutral-500">중단</button>
