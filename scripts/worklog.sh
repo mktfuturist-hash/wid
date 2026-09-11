@@ -6,17 +6,18 @@
 # - <!-- auto:날짜 --> ~ <!-- /auto:날짜 --> 사이만 갱신하므로
 #   블록 바깥에 손으로 적은 서술은 절대 덮어쓰지 않는다
 set -euo pipefail
-export TZ=Asia/Seoul
 
 ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
 cd "$ROOT"
 
 LOG="docs/WORKLOG.md"
-TODAY="$(date +%Y-%m-%d)"
+# Windows Git Bash 에선 TZ=Asia/Seoul 이 date 에 안 먹힌다 → UTC+9 를 직접 계산
+TODAY="$(date -u -d '+9 hours' +%Y-%m-%d)"
 DOWS=(일 월 화 수 목 금 토)
-DOW="${DOWS[$(date +%w)]}"
+DOW="${DOWS[$(date -u -d '+9 hours' +%w)]}"
 
-COMMITS="$(git log --since="$TODAY 00:00:00" --until="$TODAY 23:59:59" \
+# git 쪽도 타임존을 명시해 KST 하루 경계로 자른다
+COMMITS="$(git log --since="$TODAY 00:00:00 +0900" --until="$TODAY 23:59:59 +0900" \
   --reverse --pretty=format:'- %s `%h`' 2>/dev/null || true)"
 [ -n "$COMMITS" ] || exit 0
 
