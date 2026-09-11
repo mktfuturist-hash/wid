@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { FieldLabel } from "@/components/ui";
+import { TrackSubmit } from "@/components/track";
 
 type AreaOpt = { id: number; name: string; icon: string | null };
 type GoalOpt = { id: number; title: string; areaId: number | null };
@@ -38,6 +39,7 @@ export function NewProjectForm({
 
   return (
     <form action={action} className="space-y-3">
+      <TrackSubmit event="project_create" />
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <h2 className="text-sm font-semibold text-neutral-500">새 프로젝트</h2>
         <label className="flex items-center gap-1.5">

@@ -5,6 +5,7 @@ import { requireUserId } from "@/lib/session";
 import { createReview } from "@/lib/actions";
 import { fmtDate } from "@/lib/dates";
 import { Card, Empty, SectionTitle } from "@/components/ui";
+import { TrackSubmit } from "@/components/track";
 
 export const dynamic = "force-dynamic";
 
@@ -36,6 +37,7 @@ export default async function ReviewsPage() {
         <div className="flex gap-2">
           {(Object.keys(SCOPE_META) as (keyof typeof SCOPE_META)[]).map((scope) => (
             <form key={scope} action={createReview.bind(null, scope)}>
+              <TrackSubmit event="review_create" params={{ scope }} />
               <button className="btn">
                 {SCOPE_META[scope].icon} 오늘의 {SCOPE_META[scope].label}
               </button>

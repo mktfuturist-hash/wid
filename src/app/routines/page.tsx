@@ -7,6 +7,7 @@ import {
 import { computeRoutineStats, toKstDate } from "@/lib/routine-stats";
 import { todayStr, fmtDate } from "@/lib/dates";
 import { Card, Empty, FieldLabel, SectionTitle } from "@/components/ui";
+import { TrackSubmit } from "@/components/track";
 
 export const dynamic = "force-dynamic";
 
@@ -74,6 +75,7 @@ export default async function RoutinesPage() {
       <Card>
         <SectionTitle>새 루틴</SectionTitle>
         <form action={createRoutine} className="flex flex-wrap items-end gap-2">
+          <TrackSubmit event="routine_create" />
           <label className="min-w-56 flex-1">
             <FieldLabel>루틴 이름</FieldLabel>
             <input name="title" placeholder="루틴 (예: 매일 아침 독서 30분)" required className="w-full" />
@@ -129,6 +131,7 @@ export default async function RoutinesPage() {
                   <div className="flex items-center gap-3">
                     {st.doneToday ? (
                       <form action={unlogRoutineToday.bind(null, r.id)}>
+                        <TrackSubmit event="routine_uncheck" params={{ from: "routines" }} />
                         <button
                           className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500 text-lg text-white shadow-sm"
                           title="오늘 기록 취소"
@@ -138,6 +141,7 @@ export default async function RoutinesPage() {
                       </form>
                     ) : (
                       <form action={logRoutine.bind(null, r.id)}>
+                        <TrackSubmit event="routine_check" params={{ from: "routines", streak: st.streak + 1 }} />
                         <button
                           className="flex h-9 w-9 items-center justify-center rounded-xl border-2 border-dashed border-neutral-300 text-lg text-neutral-300 hover:border-emerald-400 hover:text-emerald-400"
                           title="루틴 기록"

@@ -9,6 +9,7 @@ import {
   AreaChip, Card, DdayBadge, Empty, FieldLabel, PillarDot, ProgressBar, SectionTitle, SmartDate,
 } from "@/components/ui";
 import { ConfirmButton } from "@/components/confirm-button";
+import { TrackSubmit } from "@/components/track";
 
 export const dynamic = "force-dynamic";
 
@@ -52,6 +53,7 @@ export default async function GoalsPage() {
         <SectionTitle>새 세부 목표</SectionTitle>
         {/* 상위 카테고리(영역)부터 왼쪽에 배치 */}
         <form action={createGoal} className="flex flex-wrap items-end gap-2">
+          <TrackSubmit event="goal_create" />
           <label>
             <FieldLabel>영역</FieldLabel>
             <select name="areaId" defaultValue="">

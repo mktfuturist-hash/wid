@@ -7,6 +7,7 @@ import { requireUserId } from "@/lib/session";
 import { todayStr, ddayLabel, fmtDate } from "@/lib/dates";
 import { Card, Empty } from "@/components/ui";
 import { ImageTaskCapture } from "@/components/image-task-capture";
+import { TrackSubmit } from "@/components/track";
 
 export const dynamic = "force-dynamic";
 
@@ -52,6 +53,7 @@ export default async function TodayPage() {
       {/* 빠른 캡처 - 날짜 없이 저장하면 인박스로 */}
       <Card>
         <form action={createTask} className="flex gap-2">
+          <TrackSubmit event="task_create" params={{ from: "today_quick" }} />
           <input
             name="title"
             placeholder="⚡ 떠오르는 것을 바로 던지세요 (인박스로 저장)"
@@ -84,6 +86,7 @@ export default async function TodayPage() {
             {routineStats.map(({ r, st }) =>
               st.doneToday ? (
                 <form key={r.id} action={unlogRoutineToday.bind(null, r.id)}>
+                  <TrackSubmit event="routine_uncheck" params={{ from: "today" }} />
                   <button className="flex items-center gap-1.5 rounded-full bg-emerald-500 px-3.5 py-1.5 text-sm font-medium text-white shadow-sm">
                     ✓ {r.title}
                     {st.streak > 1 && <span className="text-xs opacity-80">🔥{st.streak}</span>}
@@ -91,6 +94,7 @@ export default async function TodayPage() {
                 </form>
               ) : (
                 <form key={r.id} action={logRoutine.bind(null, r.id)}>
+                  <TrackSubmit event="routine_check" params={{ from: "today", streak: st.streak + 1 }} />
                   <button className="flex items-center gap-1.5 rounded-full border border-dashed border-neutral-300 bg-white px-3.5 py-1.5 text-sm text-neutral-500 hover:border-emerald-400 hover:text-emerald-600">
                     {r.title}
                   </button>
@@ -124,6 +128,7 @@ export default async function TodayPage() {
               return (
                 <div key={t.id} className="flex items-center gap-3 px-4 py-2.5">
                   <form action={toggleTask.bind(null, t.id, true)}>
+                    <TrackSubmit event="task_complete" params={{ from: "today" }} />
                     <button
                       className="flex h-5 w-5 items-center justify-center rounded-md border border-neutral-300 bg-white text-xs text-transparent hover:border-neutral-500"
                       aria-label="완료"

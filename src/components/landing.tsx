@@ -5,6 +5,7 @@ import { PILLARS, type Pillar } from "@/components/ui";
 import { YearCountdown } from "@/components/year-countdown";
 
 import { KAKAO_CTA } from "@/lib/links";
+import { TrackClick } from "@/components/track";
 const DEADLINE = "2026-09-14";
 
 function isClosed(): boolean {
@@ -33,7 +34,7 @@ function GoogleG({ className }: { className?: string }) {
   );
 }
 
-function Cta({ closed }: { closed: boolean }) {
+function Cta({ closed, from }: { closed: boolean; from: string }) {
   if (closed) {
     return (
       <div className="rounded-xl border border-neutral-200 bg-neutral-100 px-6 py-4 text-center">
@@ -51,14 +52,16 @@ function Cta({ closed }: { closed: boolean }) {
         <span className="text-neutral-400 line-through">월 4,900원</span>{" "}
         <span className="font-extrabold text-red-600">→ 얼리버드 기간 한정 0원</span>
       </p>
-      <a
-        href={KAKAO_CTA}
-        target="_blank"
-        rel="noreferrer"
-        className="inline-block w-full max-w-sm rounded-xl bg-brand px-8 py-4 text-lg font-bold text-white shadow-lg shadow-brand/25 transition hover:bg-[#0086d6]"
-      >
-        얼리버드 신청하기
-      </a>
+      <TrackClick event="cta_click" params={{ from }}>
+        <a
+          href={KAKAO_CTA}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-block w-full max-w-sm rounded-xl bg-brand px-8 py-4 text-lg font-bold text-white shadow-lg shadow-brand/25 transition hover:bg-[#0086d6]"
+        >
+          얼리버드 신청하기
+        </a>
+      </TrackClick>
       <p className="mt-2 text-xs text-neutral-400">
         누르면 오픈채팅으로 입장합니다 · 별도 가입 절차 없음
       </p>
@@ -145,14 +148,16 @@ export function Landing() {
               로그인
             </Link>
             {!closed && (
-              <a
-                href={KAKAO_CTA}
-                target="_blank"
-                rel="noreferrer"
-                className="rounded-lg bg-brand px-3.5 py-1.5 text-sm font-bold text-white shadow-sm transition hover:bg-[#0086d6]"
-              >
-                얼리버드 신청
-              </a>
+              <TrackClick event="cta_click" params={{ from: "header" }}>
+                <a
+                  href={KAKAO_CTA}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rounded-lg bg-brand px-3.5 py-1.5 text-sm font-bold text-white shadow-sm transition hover:bg-[#0086d6]"
+                >
+                  얼리버드 신청
+                </a>
+              </TrackClick>
             )}
           </div>
         </div>
@@ -183,7 +188,7 @@ export function Landing() {
             <p>WID와 함께면 올해의 목표를 달성할 수 있어요.</p>
           </div>
           {/* CTA ① */}
-          <Cta closed={closed} />
+          <Cta closed={closed} from="hero" />
         </div>
       </section>
 
@@ -273,7 +278,7 @@ export function Landing() {
 
         {/* 6. CTA ② */}
         <section>
-          <Cta closed={closed} />
+          <Cta closed={closed} from="final" />
         </section>
       </div>
 

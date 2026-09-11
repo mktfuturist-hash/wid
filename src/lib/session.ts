@@ -29,6 +29,7 @@ export async function currentUser(): Promise<{
   name: string | null;
   email: string | null;
   image: string | null;
+  signedUpAt: number | null; // 이 세션에서 신규 가입했으면 그 시각(ms) - GA sign_up 1회 발사용
 } | null> {
   if (!authEnabled) return null;
   const session = await auth();
@@ -37,5 +38,6 @@ export async function currentUser(): Promise<{
     name: session.user.name ?? null,
     email: session.user.email ?? null,
     image: session.user.image ?? null,
+    signedUpAt: (session as unknown as { signedUpAt?: number }).signedUpAt ?? null,
   };
 }

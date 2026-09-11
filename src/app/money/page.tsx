@@ -7,6 +7,7 @@ import {
 import { fmtDate, monthStr, todayStr } from "@/lib/dates";
 import { Card, Empty, SectionTitle } from "@/components/ui";
 import { NumberInput } from "@/components/number-input";
+import { TrackSubmit } from "@/components/track";
 
 export const dynamic = "force-dynamic";
 
@@ -153,6 +154,7 @@ export default async function MoneyPage() {
       <Card>
         <SectionTitle>가계부 입력</SectionTitle>
         <form action={addTxn} className="flex flex-wrap items-end gap-2">
+          <TrackSubmit event="money_txn_add" />
           <select name="direction" defaultValue="expense">
             <option value="expense">지출</option>
             <option value="income">수입</option>

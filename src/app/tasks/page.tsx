@@ -8,6 +8,7 @@ import { todayStr, ddayLabel, fmtDate } from "@/lib/dates";
 import { Card, DdayBadge, Empty, SectionTitle } from "@/components/ui";
 import { requireUserId } from "@/lib/session";
 import { ImageTaskCapture } from "@/components/image-task-capture";
+import { TrackSubmit } from "@/components/track";
 
 export const dynamic = "force-dynamic";
 
@@ -83,6 +84,7 @@ export default async function TasksPage({
         return (
           <div key={t.id} className="group flex items-center gap-3 px-4 py-2.5">
             <form action={toggleTask.bind(null, t.id, !t.done)}>
+              {!t.done && <TrackSubmit event="task_complete" params={{ from: "tasks" }} />}
               <button
                 className={`flex h-5 w-5 items-center justify-center rounded-md border text-xs ${
                   t.done
@@ -138,6 +140,7 @@ export default async function TasksPage({
       {/* 빠른 입력: 제목만 치면 인박스로, 날짜를 넣으면 오늘/예정으로 */}
       <Card>
         <form action={createTask} className="flex flex-wrap gap-2">
+          <TrackSubmit event="task_create" params={{ from: "tasks" }} />
           <input
             name="title"
             placeholder="떠오르는 대로 적으세요 - 날짜 없이 저장하면 인박스로"

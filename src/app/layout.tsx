@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import "./globals.css";
 import { Sidebar } from "@/components/sidebar";
+import { SessionEvents } from "@/components/track";
 import { currentUser, isAdmin } from "@/lib/session";
 import { authEnabled } from "@/auth.config";
 
@@ -42,6 +43,8 @@ gtag('config', '${gaId}');`}
             </Script>
           </>
         )}
+        {/* 로그인 사용자 계정 이벤트 (sign_up 1회 · login 세션당 1회) */}
+        {user && <SessionEvents signedUpAt={user.signedUpAt} />}
         <div className="flex min-h-screen">
           {showSidebar && <Sidebar user={user} isAdmin={admin} />}
           {/* 모바일은 상단 고정 헤더(h-14) 아래로 내용 시작 */}

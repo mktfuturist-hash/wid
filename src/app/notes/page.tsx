@@ -6,6 +6,7 @@ import { createNote } from "@/lib/actions";
 import { fmtDate } from "@/lib/dates";
 import { Card, Empty, SectionTitle } from "@/components/ui";
 import { toKstDate } from "@/lib/routine-stats";
+import { TrackSubmit } from "@/components/track";
 
 export const dynamic = "force-dynamic";
 
@@ -69,6 +70,7 @@ export default async function NotesPage({
       <Card>
         <SectionTitle>새 노트</SectionTitle>
         <form action={createNote} className="flex flex-wrap items-end gap-2">
+          <TrackSubmit event="note_create" />
           <input name="title" placeholder="노트 제목" required className="min-w-52 flex-1" />
           <select name="type" defaultValue="note">
             {Object.entries(TYPE_META).map(([k, v]) => (

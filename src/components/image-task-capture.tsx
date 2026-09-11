@@ -4,6 +4,7 @@ import { useRef, useState, useTransition } from "react";
 import { parseTasksFromImage, type ParsedTask } from "@/lib/ai-actions";
 import { createTasksBulk } from "@/lib/actions";
 import { Card, FieldLabel } from "@/components/ui";
+import { track } from "@/lib/analytics";
 
 type ProjectOpt = { id: number; title: string };
 type Row = ParsedTask & { checked: boolean };
@@ -56,6 +57,7 @@ export function ImageTaskCapture({ projects }: { projects: ProjectOpt[] }) {
         picked.map(({ title, dueDate }) => ({ title, dueDate })),
         projectId ? Number(projectId) : null
       );
+      track("ai_tasks_extract", { count: picked.length });
       setDoneMsg(`✅ ${picked.length}개 할 일을 등록했어요.`);
       reset();
     });

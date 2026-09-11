@@ -68,17 +68,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         } catch {
           refCode = null;
         }
-        token.uid = await upsertUser(
+        const { id, isNew } = await upsertUser(
           email,
           (user?.name ?? token.name ?? null) as string | null,
           (user?.image ?? token.picture ?? null) as string | null,
           refCode
         );
+        token.uid = id;
+        // 신규 가입 시각 - 클라이언트가 GA sign_up 이벤트를 1회 쏘는 근거
+        if (isNew) token.signedUpAt = Date.now();
       }
       return token;
     },
     session({ session, token }) {
-      (session as unknown as { uid?: number }).uid = token.uid as number | undefined;
+      const s = session as unknown as { uid?: number; signedUpAt?: number };
+      s.uid = token.uid as number | undefined;
+      s.signedUpAt = token.signedUpAt as number | undefined;
       return session;
     },
   },

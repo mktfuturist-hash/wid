@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { FieldLabel } from "@/components/ui";
+import { TrackSubmit } from "@/components/track";
 
 /* 분류(Work·Life·Money)를 고르면 이름·가이드라인 예시가 그 분류에 맞게 바뀐다 */
 const EXAMPLES = {
@@ -23,6 +24,7 @@ export function NewAreaForm({ action }: { action: (fd: FormData) => Promise<void
   const [pillar, setPillar] = useState<keyof typeof EXAMPLES>("life");
   return (
     <form action={action} className="flex flex-wrap items-end gap-2">
+      <TrackSubmit event="area_create" />
       <label>
         <FieldLabel>분류</FieldLabel>
         <select
