@@ -19,11 +19,13 @@ export function NumberInput({
   defaultValue,
   className = "",
   placeholder,
+  required = false,
 }: {
   name: string;
   defaultValue?: number | string | null;
   className?: string;
   placeholder?: string;
+  required?: boolean;
 }) {
   const [value, setValue] = useState(
     defaultValue != null && defaultValue !== "" ? addCommas(String(defaultValue)) : ""
@@ -36,6 +38,7 @@ export function NumberInput({
       inputMode="decimal"
       className={className}
       placeholder={placeholder}
+      required={required}
     />
   );
 }

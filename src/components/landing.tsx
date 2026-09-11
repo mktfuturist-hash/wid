@@ -12,7 +12,7 @@ function isClosed(): boolean {
   return todayStr() > DEADLINE;
 }
 
-/** 섹션 눈썹 라벨 — 파란 소제목 */
+/** 섹션 눈썹 라벨 - 파란 소제목 */
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
     <p className="text-center text-xs font-bold uppercase tracking-[0.2em] text-brand">
@@ -46,7 +46,7 @@ function Cta({ closed }: { closed: boolean }) {
   }
   return (
     <div className="text-center">
-      {/* 가격 앵커 — 원가 대비 얼리버드 혜택 */}
+      {/* 가격 앵커 - 원가 대비 얼리버드 혜택 */}
       <p className="mb-2.5 text-base">
         <span className="text-neutral-400 line-through">월 4,900원</span>{" "}
         <span className="font-extrabold text-red-600">→ 얼리버드 기간 한정 0원</span>
@@ -118,7 +118,7 @@ function MiniDemo() {
 
 const PILLAR_INTRO: { pillar: Pillar; title: string; desc: string }[] = [
   { pillar: "work", title: "Work", desc: "커리어 목표를 세우고, 바쁜 업무 속에서도 방향을 점검해요" },
-  { pillar: "life", title: "Life", desc: "건강·가족·성장 — 미루던 삶의 목표를 루틴으로 굳혀요" },
+  { pillar: "life", title: "Life", desc: "건강·가족·성장 - 미루던 삶의 목표를 루틴으로 굳혀요" },
   { pillar: "money", title: "Money", desc: "계좌 잔액만 갱신하면 순자산과 돈 목표 진척률이 자동 계산돼요" },
 ];
 
@@ -158,7 +158,7 @@ export function Landing() {
         </div>
       </header>
 
-      {/* 1. 히어로 — 밝은 블루톤 밴드 */}
+      {/* 1. 히어로 - 밝은 블루톤 밴드 */}
       <section className="full-bleed bg-gradient-to-b from-brand-mist via-brand-mist/40 to-transparent">
         <div className="mx-auto max-w-2xl space-y-6 px-4 pb-14 pt-14 text-center sm:pt-20">
           <div className="inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-4 py-1.5 text-sm font-semibold text-red-600">
@@ -172,7 +172,7 @@ export function Landing() {
           {/* 올해가 얼마 안 남았다는 걸 초 단위로 체감시키는 카운트다운 */}
           <YearCountdown />
           <p className="text-sm italic text-brand-deep/60">
-            WID — &ldquo;What I Do makes me Wiser.&rdquo;
+            WID - &ldquo;What I Do makes me Wiser.&rdquo;
           </p>
           <div className="mx-auto max-w-lg space-y-1.5 text-[15px] leading-relaxed text-neutral-600">
             <p>매일 강의만 듣고 목표만 세우다 한 해가 끝나지는 않으셨나요?</p>
@@ -200,7 +200,7 @@ export function Landing() {
           <MiniDemo />
         </section>
 
-        {/* 3. 3기둥 — 연한 블루 밴드 */}
+        {/* 3. 3기둥 - 연한 블루 밴드 */}
         <section className="full-bleed bg-brand-mist/45">
           <div className="mx-auto max-w-2xl space-y-4 px-4 py-12">
             <Eyebrow>세 기둥</Eyebrow>
@@ -208,7 +208,7 @@ export function Landing() {
               작은 루틴, 큰 성공
             </h2>
             <p className="text-center text-[15px] text-neutral-500">
-              인생의 세 기둥을 한 화면에서 — WID는 일·삶·돈을 함께 관리하는 라이프 플래너입니다
+              인생의 세 기둥을 한 화면에서 - WID는 일과 삶, 목표 자산을 함께 관리하는 라이프 플래너입니다
             </p>
             <div className="grid gap-3 sm:grid-cols-3">
               {PILLAR_INTRO.map(({ pillar, title, desc }) => (
@@ -267,7 +267,7 @@ export function Landing() {
             <b className="text-navy">첫 30명의 와이저(Wiser)가 남긴 피드백이 WID의 다음 버전을 만듭니다.</b>
           </p>
           <p className="text-sm text-neutral-400">
-            자격은 하나 — <b className="text-brand-deep">올해 이루고 싶은 목표가 하나라도 있는 분</b>
+            자격은 하나 - <b className="text-brand-deep">올해 이루고 싶은 목표가 하나라도 있는 분</b>
           </p>
         </section>
 
@@ -277,7 +277,7 @@ export function Landing() {
         </section>
       </div>
 
-      {/* 7. 푸터 — 다크 네이비 밴드 + 구글 로그인 */}
+      {/* 7. 푸터 - 다크 네이비 밴드 + 구글 로그인 */}
       <footer className="full-bleed -mb-24 bg-navy md:-mb-10">
         <div className="mx-auto max-w-2xl space-y-5 px-4 py-12 text-center">
           <p className="text-sm font-semibold text-white">이미 얼리버드 멤버신가요?</p>
@@ -297,7 +297,7 @@ export function Landing() {
             </Link>
           </p>
           <p className="text-[11px] text-navy-faint/70">
-            WID — What I Do makes me Wiser.
+            WID - What I Do makes me Wiser.
           </p>
         </div>
       </footer>

@@ -11,7 +11,7 @@ type Area = {
   guideline: string | null;
 };
 
-/* 영역 카드 — 편집 버튼으로 그 자리에서 이름·아이콘·분류·가이드라인 수정 */
+/* 영역 카드 - 편집 버튼으로 그 자리에서 이름·아이콘·분류·가이드라인 수정 */
 export function AreaCard({
   area,
   updateAction,

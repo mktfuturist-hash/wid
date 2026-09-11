@@ -1,7 +1,7 @@
 import { Landing } from "@/components/landing";
 
 export const metadata = {
-  title: "멈추지 않는 올해 — WID 얼리버드",
+  title: "멈추지 않는 올해 - WID 얼리버드",
   description:
     "올해 마지막 100일, 루틴 챌린지. 목표를 구조화하고, 할 일을 설정하고, 루틴화하세요. 얼리버드 30명 한정.",
 };

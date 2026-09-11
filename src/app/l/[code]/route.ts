@@ -17,7 +17,7 @@ export async function GET(
     return NextResponse.redirect(new URL("/landing", req.url));
   }
 
-  // 링크 프리뷰 봇은 사람이 아니다 — 세지 않는다
+  // 링크 프리뷰 봇은 사람이 아니다 - 세지 않는다
   if (!isPreviewBot(req.headers.get("user-agent"))) {
     await logClick(link.id, req);
   }
@@ -40,7 +40,7 @@ export async function GET(
      누르는 순간 유입 출처가 덮여서 "어디서 왔는지"를 잃는다. */
   if (!external) {
     res.cookies.set("wid_ref", link.code, {
-      maxAge: 60 * 60 * 24 * 30, // 30일 — 이 안에 가입하면 이 링크의 전환으로 집계
+      maxAge: 60 * 60 * 24 * 30, // 30일 - 이 안에 가입하면 이 링크의 전환으로 집계
       path: "/",
       sameSite: "lax",
     });

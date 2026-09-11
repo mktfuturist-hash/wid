@@ -4,7 +4,7 @@ import { db, users } from "@/db";
 // 로그인 화면에 고지된 처리방침 시행일. 방침 개정 시 함께 올린다.
 export const PRIVACY_POLICY_VERSION = "2026-09-06";
 
-/** 이메일 기준 upsert — 구글 로그인 = 회원가입. 내부 user id를 반환한다.
+/** 이메일 기준 upsert - 구글 로그인 = 회원가입. 내부 user id를 반환한다.
     refCode = 숏링크 유입 코드(첫 가입에만 기록, 기존 회원 재로그인엔 덮지 않음) */
 export async function upsertUser(
   email: string,

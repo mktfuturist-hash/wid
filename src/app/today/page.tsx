@@ -10,7 +10,7 @@ import { ImageTaskCapture } from "@/components/image-task-capture";
 
 export const dynamic = "force-dynamic";
 
-/* ☀️ 오늘 — 하루의 실행만 모은 화면. 오늘의 데일리 루틴 체크 + 오늘 기한 할 일 처리 */
+/* ☀️ 오늘 - 하루의 실행만 모은 화면. 오늘의 데일리 루틴 체크 + 오늘 기한 할 일 처리 */
 export default async function TodayPage() {
   const uid = await requireUserId();
   const today = todayStr();
@@ -45,11 +45,11 @@ export default async function TodayPage() {
       <header>
         <h1 className="text-2xl font-bold">☀️ 오늘</h1>
         <p className="mt-1 text-sm text-neutral-500">
-          {fmtDate(today)} ({weekday}) — 오늘 움직일 것만 모았어요. 계획은 목표·프로젝트에서, 실행은 여기서.
+          {fmtDate(today)} ({weekday}) - 오늘 움직일 것만 모았어요. 계획은 목표·프로젝트에서, 실행은 여기서.
         </p>
       </header>
 
-      {/* 빠른 캡처 — 날짜 없이 저장하면 인박스로 */}
+      {/* 빠른 캡처 - 날짜 없이 저장하면 인박스로 */}
       <Card>
         <form action={createTask} className="flex gap-2">
           <input
@@ -67,7 +67,7 @@ export default async function TodayPage() {
         projects={prjs.filter((p) => p.status !== "done").map((p) => ({ id: p.id, title: p.title }))}
       />
 
-      {/* 데일리 루틴 — 매일 반복하는 행동 */}
+      {/* 데일리 루틴 - 매일 반복하는 행동 */}
       <section>
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-sm font-semibold text-neutral-500">🔁 데일리 루틴 ({routineDone}/{activeRoutines.length})</h2>
@@ -77,7 +77,7 @@ export default async function TodayPage() {
         </div>
         {activeRoutines.length === 0 ? (
           <Empty>
-            아직 루틴이 없습니다 — <Link href="/routines" className="underline">첫 데일리 루틴 만들러 가기</Link>
+            아직 루틴이 없습니다 - <Link href="/routines" className="underline">첫 데일리 루틴 만들러 가기</Link>
           </Empty>
         ) : (
           <div className="flex flex-wrap gap-2">
@@ -101,7 +101,7 @@ export default async function TodayPage() {
         )}
       </section>
 
-      {/* 오늘 기한 할 일 — 프로젝트에서 내려온 1회성 행동 */}
+      {/* 오늘 기한 할 일 - 프로젝트에서 내려온 1회성 행동 */}
       <section>
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-sm font-semibold text-neutral-500">

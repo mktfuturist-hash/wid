@@ -89,7 +89,7 @@ export function LoginCard({
         client_id: googleClientId,
         callback: async (res) => {
           setBusy(true);
-          // 검증은 서버(google-gis 프로바이더)에서 — 성공 시 홈으로
+          // 검증은 서버(google-gis 프로바이더)에서 - 성공 시 홈으로
           await signIn("google-gis", { credential: res.credential, callbackUrl: "/" });
           setBusy(false);
         },
@@ -117,7 +117,7 @@ export function LoginCard({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      /* 클립보드 미지원 웹뷰 — 주소창 안내로 충분 */
+      /* 클립보드 미지원 웹뷰 - 주소창 안내로 충분 */
     }
   };
 
@@ -193,7 +193,7 @@ export function LoginCard({
         ) : !authEnabled ? (
           <div className="space-y-3">
             <p className="rounded-xl bg-neutral-100 px-4 py-3 text-sm text-neutral-500">
-              로컬 모드 — 로그인 없이 사용 중이에요
+              로컬 모드 - 로그인 없이 사용 중이에요
             </p>
             <Link href="/" className="block rounded-xl bg-brand px-4 py-2.5 font-bold text-white">
               홈으로 가기

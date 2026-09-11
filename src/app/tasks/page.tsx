@@ -43,7 +43,7 @@ export default async function TasksPage({
       .orderBy(asc(tasks.dueDate), asc(tasks.id));
     list = list.filter((t) => t.dueDate && t.dueDate <= today);
   } else if (view === "upcoming") {
-    // (오늘 뷰 하단에도 예정 미리보기를 함께 보여준다 — 아래 upcoming 쿼리 참조)
+    // (오늘 뷰 하단에도 예정 미리보기를 함께 보여준다 - 아래 upcoming 쿼리 참조)
     list = await db
       .select()
       .from(tasks)
@@ -131,7 +131,7 @@ export default async function TasksPage({
       <header>
         <h1 className="text-2xl font-bold">✅ 전체 할 일</h1>
         <p className="mt-1 text-sm text-neutral-500">
-          프로젝트에서 내려온 1회성 행동 전부 — 오늘 할 것은 ☀️ 오늘에서 체크하세요.
+          프로젝트에서 내려온 1회성 행동 전부 - 오늘 할 것은 ☀️ 오늘에서 체크하세요.
         </p>
       </header>
 
@@ -140,7 +140,7 @@ export default async function TasksPage({
         <form action={createTask} className="flex flex-wrap gap-2">
           <input
             name="title"
-            placeholder="떠오르는 대로 적으세요 — 날짜 없이 저장하면 인박스로"
+            placeholder="떠오르는 대로 적으세요 - 날짜 없이 저장하면 인박스로"
             required
             autoFocus
             className="min-w-56 flex-1"
@@ -182,7 +182,7 @@ export default async function TasksPage({
           <Empty>
             {view === "today" && "오늘 할 일이 없습니다 🎉"}
             {view === "upcoming" && "예정된 할 일이 없습니다"}
-            {view === "inbox" && "인박스가 비어있습니다 — 떠오르는 것을 위에 던져두세요"}
+            {view === "inbox" && "인박스가 비어있습니다 - 떠오르는 것을 위에 던져두세요"}
             {view === "done" && "완료된 할 일이 없습니다"}
           </Empty>
         ) : (

@@ -16,12 +16,12 @@ export const users = pgTable("users", {
   email: text("email").notNull().unique(),
   name: text("name"),
   image: text("image"),
-  // 개인정보 수집·이용 동의 입증용 — 최초 가입 시 기록
+  // 개인정보 수집·이용 동의 입증용 - 최초 가입 시 기록
   privacyAgreedAt: timestamp("privacy_agreed_at"),
   privacyPolicyVersion: text("privacy_policy_version"),
-  /* 관리자 플래그 — /admin 접근 권한. 환경변수 대신 DB로 판별한다 */
+  /* 관리자 플래그 - /admin 접근 권한. 환경변수 대신 DB로 판별한다 */
   isAdmin: boolean("is_admin").notNull().default(false),
-  /* 유입 추적 — 첫 가입 시 타고 들어온 숏링크 코드 (퍼스트터치, 이후 로그인에 덮이지 않음) */
+  /* 유입 추적 - 첫 가입 시 타고 들어온 숏링크 코드 (퍼스트터치, 이후 로그인에 덮이지 않음) */
   signupLinkCode: text("signup_link_code"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
@@ -55,7 +55,7 @@ export const shortLinks = pgTable("short_links", {
   utmMedium: text("utm_medium"),
   utmCampaign: text("utm_campaign"),
   utmContent: text("utm_content"),
-  /* 어디에 뿌렸는지 메모 — 나중에 성과와 붙이기 위한 기록 */
+  /* 어디에 뿌렸는지 메모 - 나중에 성과와 붙이기 위한 기록 */
   note: text("note"),
   /* 채널 프리셋으로 만든 링크면 그 채널 */
   channelId: integer("channel_id").references(() => utmChannels.id),
@@ -65,7 +65,7 @@ export const shortLinks = pgTable("short_links", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-// ── 숏링크 클릭 로그: 익명 집계용 (개인정보 없음 — 시각·리퍼러만) ──
+// ── 숏링크 클릭 로그: 익명 집계용 (개인정보 없음 - 시각·리퍼러만) ──
 export const linkClicks = pgTable("link_clicks", {
   id: serial("id").primaryKey(),
   linkId: integer("link_id")
@@ -111,7 +111,7 @@ export const goals = pgTable("goals", {
     .default("milestone"),
   metricTarget: real("metric_target"),
   metricCurrent: real("metric_current"),
-  /* 감소형 목표(감량 등)의 출발점 — 있으면 (현재-시작)/(목표-시작)으로 진척률 계산 */
+  /* 감소형 목표(감량 등)의 출발점 - 있으면 (현재-시작)/(목표-시작)으로 진척률 계산 */
   metricStart: real("metric_start"),
   metricUnit: text("metric_unit"),
   moneyAccountId: integer("money_account_id"),
@@ -193,12 +193,12 @@ export const routines = pgTable("routines", {
     .notNull()
     .default("active"),
   targetFreqWeekly: integer("target_freq_weekly"),
-  /* 루틴 기간 — 둘 다 있으면 기간 히트맵, 없으면 상시(매일) 루틴 */
+  /* 루틴 기간 - 둘 다 있으면 기간 히트맵, 없으면 상시(매일) 루틴 */
   startDate: date("start_date"),
   endDate: date("end_date"),
 });
 
-// 루틴 원터치 기록 — 클릭 시각 자동 저장
+// 루틴 원터치 기록 - 클릭 시각 자동 저장
 export const routineLogs = pgTable("routine_logs", {
   id: serial("id").primaryKey(),
   userId: integer("user_id")

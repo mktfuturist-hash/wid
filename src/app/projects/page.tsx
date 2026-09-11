@@ -39,7 +39,7 @@ export default async function ProjectsPage() {
   const statOf = (id: number) =>
     taskStats.find((t) => t.projectId === id) ?? { total: 0, done: 0 };
 
-  // 아직 안 한 할 일 — 카드 안에 "다음에 하게 될 항목"으로 노출
+  // 아직 안 한 할 일 - 카드 안에 "다음에 하게 될 항목"으로 노출
   const undoneTasks = prjs.length
     ? await db
         .select()
@@ -71,7 +71,7 @@ export default async function ProjectsPage() {
       <header>
         <h1 className="text-2xl font-bold">📁 프로젝트</h1>
         <p className="mt-1 text-sm text-neutral-500">
-          무엇을 만들어서 가는가 — 목표를 향한 실행 단위에 할 일을 붙여 계획하세요.
+          무엇을 만들어서 가는가 - 목표를 향한 실행 단위에 할 일을 붙여 계획하세요.
         </p>
       </header>
 

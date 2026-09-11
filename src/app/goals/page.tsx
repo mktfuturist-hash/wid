@@ -44,7 +44,7 @@ export default async function GoalsPage() {
       <header>
         <h1 className="text-2xl font-bold">🎯 세부 목표</h1>
         <p className="mt-1 text-sm text-neutral-500">
-          어디로 가는가 — 기한과 측정 방식을 정하면 진척률이 자동으로 계산됩니다.
+          어디로 가는가 - 기한과 측정 방식을 정하면 진척률이 자동으로 계산됩니다.
         </p>
       </header>
 

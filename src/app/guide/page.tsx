@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { Card } from "@/components/ui";
 
-export const metadata = { title: "사용 설명서 — WID" };
+export const metadata = { title: "사용 설명서 - WID" };
 
 function Step({
   no,
@@ -87,7 +87,7 @@ export default function GuidePage() {
 
       {/* ── 1. 전체 구조: 데이터가 어떻게 연동되는가 ── */}
       <section className="space-y-4">
-        <h2 className="text-xl font-bold">1. 전체 구조 — 데이터가 어떻게 연동되는가</h2>
+        <h2 className="text-xl font-bold">1. 전체 구조 - 데이터가 어떻게 연동되는가</h2>
         <p className="text-sm leading-relaxed text-neutral-600">
           모든 데이터는 <b>영역에서 출발해 아래로 흘러내리는 트리</b>입니다. 위에서 만든 것에
           아래 것을 연결하면, 아래에서 일어난 일(할 일 완료, 루틴 실행, 잔액 변화)이 <b>위로
@@ -96,22 +96,22 @@ export default function GuidePage() {
 
         <Card className="bg-neutral-50/50">
           <div className="mx-auto max-w-sm">
-            <FlowBox icon="🗂️" name="영역 (Area)" desc="인생의 최상위 카테고리 — Work·Life·Money 기둥에 소속" color="border-neutral-300 bg-white" />
+            <FlowBox icon="🗂️" name="영역 (Area)" desc="인생의 최상위 카테고리 - Work·Life·Money 기둥에 소속" color="border-neutral-300 bg-white" />
             <Arrow label="영역 안에 목표를 만든다" />
             <FlowBox icon="🎯" name="목표 (Goal)" desc="기한 + 측정 방식 → D-day와 진척률 자동 계산" color="border-blue-200 bg-blue-50/50" />
             <Arrow label="목표를 중간 단계로 쪼갠다" />
-            <FlowBox icon="🚩" name="중간 목표 (Milestone)" desc="목표까지의 체크포인트 — 체크하면 진척률이 오른다" color="border-blue-100 bg-white" />
+            <FlowBox icon="🚩" name="중간 목표 (Milestone)" desc="목표까지의 체크포인트 - 체크하면 진척률이 오른다" color="border-blue-100 bg-white" />
             <Arrow label="목표를 실행 단위로 옮긴다" />
-            <FlowBox icon="📁" name="프로젝트 (Project)" desc="기간이 있는 실행 묶음 — 타임라인·KPI·회고" color="border-emerald-200 bg-emerald-50/50" />
+            <FlowBox icon="📁" name="프로젝트 (Project)" desc="기간이 있는 실행 묶음 - 타임라인·KPI·회고" color="border-emerald-200 bg-emerald-50/50" />
             <Arrow label="프로젝트를 완수할 작업을 나열한다" />
-            <FlowBox icon="✅" name="할 일 (Task)" desc="가장 작은 실행 단위 — 오늘·예정·인박스로 분류" color="border-emerald-100 bg-white" />
+            <FlowBox icon="✅" name="할 일 (Task)" desc="가장 작은 실행 단위 - 오늘·예정·인박스로 분류" color="border-emerald-100 bg-white" />
           </div>
           <div className="mt-5 grid gap-2 border-t border-neutral-200 pt-4 text-xs text-neutral-500 sm:grid-cols-3">
             <div className="rounded-lg bg-white p-2.5 text-center">
-              <b>🔁 루틴</b><br />목표에 연결 — 실행 기록이 목표 진척의 재료가 됨
+              <b>🔁 루틴</b><br />목표에 연결 - 실행 기록이 목표 진척의 재료가 됨
             </div>
             <div className="rounded-lg bg-white p-2.5 text-center">
-              <b>💰 머니 계좌</b><br />돈 목표에 연결 — 잔액이 곧 진척률
+              <b>💰 머니 계좌</b><br />돈 목표에 연결 - 잔액이 곧 진척률
             </div>
             <div className="rounded-lg bg-white p-2.5 text-center">
               <b>📝 노트</b><br />영역·목표·프로젝트 어디에든 붙는 기록
@@ -120,19 +120,19 @@ export default function GuidePage() {
         </Card>
 
         <Card>
-          <h3 className="mb-2 text-sm font-bold">🔗 자동 연동 규칙 — 직접 외울 필요는 없지만, 알면 편한 것들</h3>
+          <h3 className="mb-2 text-sm font-bold">🔗 자동 연동 규칙 - 직접 외울 필요는 없지만, 알면 편한 것들</h3>
           <ul className="list-disc space-y-1.5 pl-5 text-sm leading-relaxed text-neutral-600">
             <li><b>목표 상세에서 중간 목표을 추가하면</b> 그 목표에 자동 연결됩니다. 체크할 때마다 목표 진척률이 다시 계산됩니다.</li>
             <li><b>프로젝트 상세에서 할 일을 추가하면</b> 그 프로젝트에 자동 연결되고, 프로젝트의 완료율(3/7 같은)이 자동 집계됩니다.</li>
             <li><b>프로젝트를 목표에 연결하면</b>, 그 프로젝트의 할 일 완료율을 목표 진척률로 쓸 수 있습니다 (측정 방식: 프로젝트 할일 완료율).</li>
-            <li><b>루틴을 목표에 연결하면</b>, 루틴 실행 횟수를 목표 진척률로 쓸 수 있습니다 (측정 방식: 루틴 실행 횟수 — 예: 러닝 100회).</li>
+            <li><b>루틴을 목표에 연결하면</b>, 루틴 실행 횟수를 목표 진척률로 쓸 수 있습니다 (측정 방식: 루틴 실행 횟수 - 예: 러닝 100회).</li>
             <li><b>머니 계좌를 돈 목표에 연결하면</b>, 계좌 잔액 ÷ 목표 금액이 곧 진척률입니다. 잔액만 갱신하면 목표가 저절로 움직입니다.</li>
             <li><b>할 일을 프로젝트도 기한도 없이 저장하면</b> 자동으로 <b>인박스</b>에 들어갑니다. 생각나는 대로 던져두고 나중에 분류하는 곳입니다.</li>
           </ul>
         </Card>
 
         <Card>
-          <h3 className="mb-2 text-sm font-bold">📐 진척률 측정 방식 5가지 — 목표마다 하나를 고릅니다</h3>
+          <h3 className="mb-2 text-sm font-bold">📐 진척률 측정 방식 5가지 - 목표마다 하나를 고릅니다</h3>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
@@ -156,7 +156,7 @@ export default function GuidePage() {
 
       {/* ── 2. 시작 순서 ── */}
       <section className="space-y-4">
-        <h2 className="text-xl font-bold">2. 시작 순서 — 반드시 위에서 아래로</h2>
+        <h2 className="text-xl font-bold">2. 시작 순서 - 반드시 위에서 아래로</h2>
         <p className="text-sm leading-relaxed text-neutral-600">
           할 일부터 쌓기 시작하면 며칠 안에 <b>&ldquo;내가 이걸 왜 하고 있지?&rdquo;</b>가 됩니다.
           반대로 <b>영역 → 목표 → 중간 목표 → 프로젝트 → 할 일</b> 순서로 내려오면, 모든 할 일이
@@ -164,51 +164,51 @@ export default function GuidePage() {
         </p>
 
         <div className="space-y-3">
-          <Step no={1} title="영역 만들기 — 내 인생의 지도 그리기" href="/areas" cta="영역 입력하러 가기">
+          <Step no={1} title="영역 만들기 - 내 인생의 지도 그리기" href="/areas" cta="영역 입력하러 가기">
             <p>
               인생을 구성하는 큰 카테고리를 3~7개 만듭니다. 각 영역은 <b className="text-work-ink">Work</b>·<b className="text-life-ink">Life</b>·<b className="text-money-ink">Money</b> 중
               한 기둥에 소속시킵니다.
             </p>
             <p className="rounded-lg bg-neutral-50 p-2.5 text-xs">
-              예시 — Work: 💼 커리어, 📣 사이드프로젝트 / Life: 🏃 건강, 👨‍👩‍👧 가족, 📚 성장 / Money: 💰 자산
+              예시 - Work: 💼 커리어, 📣 사이드프로젝트 / Life: 🏃 건강, 👨‍👩‍👧 가족, 📚 성장 / Money: 💰 자산
             </p>
             <p>가이드라인 칸에는 &ldquo;이 영역에서 나는 어떤 사람이 되고 싶은가&rdquo;를 한 줄 적어두면 목표 세울 때 나침반이 됩니다.</p>
           </Step>
 
-          <Step no={2} title="목표 세우기 — 기한과 측정 방식이 핵심" href="/goals" cta="목표 입력하러 가기">
+          <Step no={2} title="목표 세우기 - 기한과 측정 방식이 핵심" href="/goals" cta="목표 입력하러 가기">
             <p>
               영역마다 1~2개면 충분합니다. 목표를 만들 때 <b>3가지</b>를 꼭 정하세요:
               ① 소속 영역 ② 기한(D-day가 자동 계산됨) ③ <b>측정 방식</b>(위 표에서 선택).
             </p>
             <p className="rounded-lg bg-neutral-50 p-2.5 text-xs">
-              예시 — 🏃 건강: &ldquo;72kg까지 감량&rdquo; (수치 직접 입력, 12/31까지) / 💰 자산: &ldquo;비상금 3천만원&rdquo; (계좌 잔액 연동)
+              예시 - 🏃 건강: &ldquo;72kg까지 감량&rdquo; (수치 직접 입력, 12/31까지) / 💰 자산: &ldquo;비상금 3천만원&rdquo; (계좌 잔액 연동)
             </p>
             <p>측정 방식이 애매하면 일단 <b>중간 목표 체크</b>로 시작하세요. 나중에 목표 상세에서 언제든 바꿀 수 있습니다.</p>
           </Step>
 
-          <Step no={3} title="중간 목표으로 쪼개기 — 큰 목표를 체크포인트로" href="/goals" cta="목표 상세에서 중간 목표 추가">
+          <Step no={3} title="중간 목표으로 쪼개기 - 큰 목표를 체크포인트로" href="/goals" cta="목표 상세에서 중간 목표 추가">
             <p>
               목표를 클릭해 상세로 들어가서, 목표까지의 중간 단계를 기한과 함께 3~5개 추가합니다.
               기한이 가장 가까운 미완료 중간 목표이 <b>&ldquo;🚩 다음 중간 목표&rdquo;</b>으로 항상
               표시되므로, 지금 뭘 하면 되는지 헤맬 일이 없습니다.
             </p>
             <p className="rounded-lg bg-neutral-50 p-2.5 text-xs">
-              예시 — 72kg 감량: 90kg(2월 말) → 80kg(4월 말) → 72kg(6월 말)
+              예시 - 72kg 감량: 90kg(2월 말) → 80kg(4월 말) → 72kg(6월 말)
             </p>
           </Step>
 
-          <Step no={4} title="프로젝트 만들기 — 목표를 실행 단위로" href="/projects" cta="프로젝트 입력하러 가기">
+          <Step no={4} title="프로젝트 만들기 - 목표를 실행 단위로" href="/projects" cta="프로젝트 입력하러 가기">
             <p>
               목표 달성을 위해 <b>기간을 정해 집중할 실행 묶음</b>을 만듭니다. 만들 때 소속 영역과
               연결 목표를 선택하고 시작일~종료일을 넣으면 타임라인에 나타납니다.
             </p>
             <p className="rounded-lg bg-neutral-50 p-2.5 text-xs">
-              예시 — &ldquo;식단 개편 4주 챌린지&rdquo; (건강 영역, 72kg 목표에 연결, 8/10~9/6)
+              예시 - &ldquo;식단 개편 4주 챌린지&rdquo; (건강 영역, 72kg 목표에 연결, 8/10~9/6)
             </p>
             <p>모든 목표에 프로젝트가 필요하진 않습니다. 루틴만으로 굴러가는 목표(꾸준함형)는 프로젝트 없이 5단계로 넘어가세요.</p>
           </Step>
 
-          <Step no={5} title="할 일 채우기 — 계획은 곧 할 일 목록" href="/tasks" cta="할 일 입력하러 가기">
+          <Step no={5} title="할 일 채우기 - 계획은 곧 할 일 목록" href="/tasks" cta="할 일 입력하러 가기">
             <p>
               프로젝트 상세에 들어가 <b>그 프로젝트를 완수하기 위한 할 일을 전부 나열</b>하세요.
               이 과정이 곧 계획입니다. 각 할 일에 기한을 붙이면 그날 &ldquo;오늘&rdquo; 뷰에 자동으로 나타납니다.
@@ -219,17 +219,17 @@ export default function GuidePage() {
             </p>
           </Step>
 
-          <Step no={6} title="루틴 등록 — 꾸준함을 기록으로" href="/routines" cta="루틴 입력하러 가기">
+          <Step no={6} title="루틴 등록 - 꾸준함을 기록으로" href="/routines" cta="루틴 입력하러 가기">
             <p>
               목표 달성을 위해 <b>반복해야 하는 행동</b>을 등록하고 관련 목표에 연결하세요. 실행할 때마다
               버튼 한 번이면 기록되고, 연속 일수(🔥 스트릭)와 28일 히트맵이 자동으로 쌓입니다.
             </p>
             <p className="rounded-lg bg-neutral-50 p-2.5 text-xs">
-              예시 — &ldquo;매일 아침 러닝 30분&rdquo; (72kg 목표 연결), &ldquo;주 3회 독서&rdquo;
+              예시 - &ldquo;매일 아침 러닝 30분&rdquo; (72kg 목표 연결), &ldquo;주 3회 독서&rdquo;
             </p>
           </Step>
 
-          <Step no={7} title="머니 세팅 — 계좌 등록과 첫 잔액" href="/money" cta="머니보드 입력하러 가기">
+          <Step no={7} title="머니 세팅 - 계좌 등록과 첫 잔액" href="/money" cta="머니보드 입력하러 가기">
             <p>
               예적금·투자·부동산·대출·보험연금 계좌를 등록하고 현재 잔액을 입력하세요. 이 순간부터
               순자산이 계산되고, <b>월 1회 잔액만 갱신하면</b> 순자산 추이 그래프가 쌓입니다.
@@ -244,13 +244,13 @@ export default function GuidePage() {
 
       {/* ── 3. 매일의 사용 루프 ── */}
       <section className="space-y-4">
-        <h2 className="text-xl font-bold">3. 세팅이 끝나면 — 매일의 사용 루프</h2>
+        <h2 className="text-xl font-bold">3. 세팅이 끝나면 - 매일의 사용 루프</h2>
         <div className="grid gap-3 sm:grid-cols-2">
           <Card>
             <h3 className="text-sm font-bold">☀️ 아침 (1분)</h3>
             <ul className="mt-2 list-disc space-y-1 pl-4 text-sm text-neutral-600">
               <li>대시보드에서 <b>오늘의 할 일</b> 확인</li>
-              <li>필요하면 <Link href="/reviews" className="underline">일간 계획</Link> 작성 — 오늘의 최우선 3가지</li>
+              <li>필요하면 <Link href="/reviews" className="underline">일간 계획</Link> 작성 - 오늘의 최우선 3가지</li>
             </ul>
           </Card>
           <Card>
@@ -265,13 +265,13 @@ export default function GuidePage() {
             <h3 className="text-sm font-bold">🌙 저녁 (3분)</h3>
             <ul className="mt-2 list-disc space-y-1 pl-4 text-sm text-neutral-600">
               <li><Link href="/tasks?view=inbox" className="underline">인박스</Link> 열어서 기한/프로젝트 붙여 분류 (또는 삭제)</li>
-              <li>일간 <Link href="/reviews" className="underline">회고</Link> — 잘한 것 / 아쉬운 것 한 줄씩</li>
+              <li>일간 <Link href="/reviews" className="underline">회고</Link> - 잘한 것 / 아쉬운 것 한 줄씩</li>
             </ul>
           </Card>
           <Card>
             <h3 className="text-sm font-bold">🗓️ 주간 · 월간</h3>
             <ul className="mt-2 list-disc space-y-1 pl-4 text-sm text-neutral-600">
-              <li>주간 회고: 목표 진척바 훑어보기 — 안 움직인 목표엔 이유가 있다</li>
+              <li>주간 회고: 목표 진척바 훑어보기 - 안 움직인 목표엔 이유가 있다</li>
               <li>월 1회: <Link href="/money" className="underline">계좌 잔액 갱신</Link> (순자산 스냅샷) + 월간 회고</li>
               <li>끝난 프로젝트엔 회고 작성 → 상태를 완료로</li>
             </ul>
@@ -307,7 +307,7 @@ export default function GuidePage() {
           href="/areas"
           className="inline-block rounded-xl bg-neutral-900 px-6 py-3 text-base font-bold text-white hover:bg-neutral-700"
         >
-          준비 끝 — 1단계: 영역 만들러 가기 →
+          준비 끝 - 1단계: 영역 만들러 가기 →
         </Link>
       </footer>
     </div>

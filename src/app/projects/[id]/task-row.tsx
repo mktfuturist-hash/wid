@@ -14,7 +14,7 @@ type Task = {
   ddayLabel: string;
 };
 
-/* 프로젝트 할 일 한 줄 — 오른쪽에 흐린 회색 편집/삭제, 편집 시 이름·기한 인라인 수정 */
+/* 프로젝트 할 일 한 줄 - 오른쪽에 흐린 회색 편집/삭제, 편집 시 이름·기한 인라인 수정 */
 export function TaskRow({
   task: t,
   toggleAction,

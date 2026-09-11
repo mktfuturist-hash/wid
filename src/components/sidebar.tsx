@@ -21,7 +21,7 @@ type NavItem = {
   indent?: boolean;
 };
 
-/* 메뉴는 세 묶음 — 실행(오늘 움직인다) / 계획(어디로 갈지 정한다) / 기록(쌓아둔다) */
+/* 메뉴는 세 묶음 - 실행(오늘 움직인다) / 계획(어디로 갈지 정한다) / 기록(쌓아둔다) */
 const NAV: NavItem[] = [
   { href: "/", label: "홈", icon: "🏠" },
   { href: "/today", label: "오늘", icon: "☀️", group: true, groupLabel: "오늘을 움직이는 실행" },
@@ -52,11 +52,11 @@ export function Sidebar({ user, isAdmin = false }: { user: SidebarUser; isAdmin?
     { href: "/mypage", label: "마이페이지", icon: "👤", group: true },
     ...(isAdmin ? [{ href: "/admin", label: "어드민", icon: "⚙️" }] : []),
   ];
-  // 랜딩·로그인은 풀페이지(full-bleed) 라우트 — 앱 셸 없이 그린다
+  // 랜딩·로그인은 풀페이지(full-bleed) 라우트 - 앱 셸 없이 그린다
   if (pathname === "/landing" || pathname === "/login") return null;
   return (
     <>
-      {/* 데스크톱 사이드바 — 슬랙식 다크 네이비 */}
+      {/* 데스크톱 사이드바 - 슬랙식 다크 네이비 */}
       <aside className="hidden w-52 shrink-0 bg-navy md:block">
         <div className="sticky top-0 flex h-screen flex-col p-4">
           <Link href="/" className="mb-6 block px-2">
@@ -139,7 +139,7 @@ export function Sidebar({ user, isAdmin = false }: { user: SidebarUser; isAdmin?
         </div>
       </aside>
 
-      {/* 모바일 상단 헤더 — 남색 바: 로고 + 마이페이지 + 전체 메뉴(햄버거) */}
+      {/* 모바일 상단 헤더 - 남색 바: 로고 + 마이페이지 + 전체 메뉴(햄버거) */}
       <header className="fixed inset-x-0 top-0 z-40 flex h-14 items-center justify-between bg-navy px-4 md:hidden">
         <Link href="/" className="flex items-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}

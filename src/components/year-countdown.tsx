@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-/* 올해(KST)가 끝나기까지 남은 시간 — D-110 07:23:45 형태 실시간 카운트다운 */
+/* 올해(KST)가 끝나기까지 남은 시간 - D-110 07:23:45 형태 실시간 카운트다운 */
 export function YearCountdown() {
   const [now, setNow] = useState<Date | null>(null);
 

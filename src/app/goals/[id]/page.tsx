@@ -111,12 +111,12 @@ export default async function GoalDetail({
         {next && (
           <p className="text-sm text-neutral-500">
             🚩 다음 중간 목표: <b>{next.title}</b>
-            {next.dueDate && ` — ${fmtDate(next.dueDate)} (${ddayLabel(next.dueDate)})`}
+            {next.dueDate && ` - ${fmtDate(next.dueDate)} (${ddayLabel(next.dueDate)})`}
           </p>
         )}
       </header>
 
-      {/* 연결된 프로젝트 현황판 — 프로젝트명 + 하위 할 일을 한눈에 */}
+      {/* 연결된 프로젝트 현황판 - 프로젝트명 + 하위 할 일을 한눈에 */}
       {linkedProjects.length > 0 && (
         <Card>
           <SectionTitle>📁 연결된 프로젝트 ({linkedProjects.length})</SectionTitle>
@@ -180,7 +180,7 @@ export default async function GoalDetail({
         {/* 중간 목표 체크 방식이 아니면 진척률과 무관한 선택 항목임을 안내 */}
         {g.metricType !== "milestone" && (
           <p className="-mt-1 mb-3 text-xs text-neutral-400">
-            이 목표의 진척률은 &lsquo;{METRIC_LABEL[g.metricType]}&rsquo;으로 계산됩니다 — 중간 목표은 필수가 아니라 선택적인 중간 체크포인트예요.
+            이 목표의 진척률은 &lsquo;{METRIC_LABEL[g.metricType]}&rsquo;으로 계산됩니다 - 중간 목표은 필수가 아니라 선택적인 중간 체크포인트예요.
           </p>
         )}
         {ms.length === 0 ? (

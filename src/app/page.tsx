@@ -36,7 +36,7 @@ export default async function Home() {
   const todayTasks = openTasks.filter((t) => t.dueDate && t.dueDate <= today);
   const activeGoals = gs.filter((g) => g.status === "active");
 
-  // getDay()는 서버 로컬 시간대(Vercel=UTC) 기준이라 KST 요일이 밀린다 — UTC 기준으로 계산
+  // getDay()는 서버 로컬 시간대(Vercel=UTC) 기준이라 KST 요일이 밀린다 - UTC 기준으로 계산
   const weekday = ["일", "월", "화", "수", "목", "금", "토"][
     new Date(today + "T00:00:00Z").getUTCDay()
   ];
@@ -47,7 +47,7 @@ export default async function Home() {
         <div>
           <h1 className="text-2xl font-bold">올인원 대시보드</h1>
           <p className="mt-1 text-sm text-neutral-500">
-            {fmtDate(today)} ({weekday}) — 오늘 할 일 {todayTasks.length}개
+            {fmtDate(today)} ({weekday}) - 오늘 할 일 {todayTasks.length}개
           </p>
         </div>
         <Link

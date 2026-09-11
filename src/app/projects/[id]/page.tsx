@@ -195,13 +195,13 @@ export default async function ProjectDetail({
           </label>
           <label className="text-sm sm:col-span-2">
             <span className="mb-1 block text-xs text-neutral-500">
-              가이드라인 — 계획할 때 스스로에게 묻기 (성공 조건은? 가장 큰 리스크는? 첫 행동은?)
+              가이드라인 - 계획할 때 스스로에게 묻기 (성공 조건은? 가장 큰 리스크는? 첫 행동은?)
             </span>
             <textarea name="guideline" defaultValue={p.guideline ?? ""} rows={3} className="w-full" />
           </label>
           <label className="text-sm sm:col-span-2">
             <span className="mb-1 block text-xs text-neutral-500">
-              회고 — 끝났을 때 돌아보기 (잘된 것 / 아쉬운 것 / 다음에 다르게 할 것)
+              회고 - 끝났을 때 돌아보기 (잘된 것 / 아쉬운 것 / 다음에 다르게 할 것)
             </span>
             <textarea name="retro" defaultValue={p.retro ?? ""} rows={3} className="w-full" />
           </label>

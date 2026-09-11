@@ -56,7 +56,7 @@ export default async function RoutinesPage() {
         <div>
           <h1 className="text-2xl font-bold">🔁 데일리 루틴</h1>
           <p className="mt-1 text-sm text-neutral-500">
-            매일 반복하는 행동 — 버튼 한 번으로 기록되고, 이어지면 스트릭이 쌓입니다.
+            매일 반복하는 행동 - 버튼 한 번으로 기록되고, 이어지면 스트릭이 쌓입니다.
           </p>
         </div>
         <div className="flex gap-4 text-right">
@@ -160,7 +160,7 @@ export default async function RoutinesPage() {
                         )}
                       </div>
                     </div>
-                    {/* 최근 28일 미니 히트맵 — 기간 루틴도 동일하게, 기간 밖 날짜만 흐리게 */}
+                    {/* 최근 28일 미니 히트맵 - 기간 루틴도 동일하게, 기간 밖 날짜만 흐리게 */}
                     <div className="hidden gap-0.5 sm:grid" style={{ gridTemplateColumns: "repeat(14, 8px)" }}>
                       {miniDates.map((d) => {
                         const outOfPeriod = hasPeriod && (d < r.startDate! || d > r.endDate!);
@@ -186,7 +186,7 @@ export default async function RoutinesPage() {
                     </div>
                   </div>
 
-                  {/* 기간 히트맵 — 설정된 기간 전체를 블록으로 */}
+                  {/* 기간 히트맵 - 설정된 기간 전체를 블록으로 */}
                   {hasPeriod && (
                     <div className="mt-3 border-t border-neutral-100 pt-3">
                       <div className="mb-1.5 flex items-center justify-between text-xs text-neutral-400">
@@ -216,7 +216,7 @@ export default async function RoutinesPage() {
                     </div>
                   )}
 
-                  {/* 기간 설정/변경 — 접힘 폼 */}
+                  {/* 기간 설정/변경 - 접힘 폼 */}
                   <details className="mt-2">
                     <summary className="cursor-pointer text-xs text-neutral-400 hover:text-neutral-600">
                       기간 {hasPeriod ? "변경" : "설정"} (비우고 저장하면 상시로)

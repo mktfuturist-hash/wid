@@ -35,7 +35,7 @@ const gisProvider = Credentials({
   },
 });
 
-// ALLOWED_EMAIL 화이트리스트 — 쉼표 구분, 대소문자 무시. 비어 있으면 전원 허용.
+// ALLOWED_EMAIL 화이트리스트 - 쉼표 구분, 대소문자 무시. 비어 있으면 전원 허용.
 const allowedEmails = (process.env.ALLOWED_EMAIL ?? "")
   .split(",")
   .map((e) => e.trim().toLowerCase())
@@ -60,7 +60,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (!token.uid && email) {
         // 동적 import: 이 콜백은 Node 라우트에서만 실행되므로 edge 번들에 db가 딸려가지 않는다
         const { upsertUser } = await import("@/lib/user");
-        // 숏링크(/l/{code}) 유입 쿠키 — 첫 가입 어트리뷰션용. 컨텍스트에 따라 못 읽을 수 있어 방어
+        // 숏링크(/l/{code}) 유입 쿠키 - 첫 가입 어트리뷰션용. 컨텍스트에 따라 못 읽을 수 있어 방어
         let refCode: string | null = null;
         try {
           const { cookies } = await import("next/headers");

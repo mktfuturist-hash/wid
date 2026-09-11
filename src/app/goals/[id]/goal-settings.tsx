@@ -36,7 +36,7 @@ type GoalData = {
 type AreaOpt = { id: number; name: string; icon: string | null };
 type AcctOpt = { id: number; name: string };
 
-/* 목표 설정 — 평소엔 설정된 값 요약을 보여주고, 편집을 누르면 수정 폼 노출 */
+/* 목표 설정 - 평소엔 설정된 값 요약을 보여주고, 편집을 누르면 수정 폼 노출 */
 export function GoalSettings({
   goal: g,
   areas,

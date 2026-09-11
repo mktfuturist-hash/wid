@@ -15,7 +15,7 @@ export function CopyButton({ text, label = "복사" }: { text: string; label?: s
           setTimeout(() => setCopied(false), 1500);
         } catch {
           try {
-            window.prompt("복사가 막혀 있어요 — 직접 복사하세요:", text);
+            window.prompt("복사가 막혀 있어요 - 직접 복사하세요:", text);
           } catch {}
         }
       }}

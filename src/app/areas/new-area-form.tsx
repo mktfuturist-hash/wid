@@ -40,7 +40,7 @@ export function NewAreaForm({ action }: { action: (fd: FormData) => Promise<void
         <input name="name" placeholder={EXAMPLES[pillar].name} required className="w-52" />
       </label>
       <label className="min-w-60 flex-1">
-        <FieldLabel>가이드라인 — 이 영역에서 나는 어떤 사람이 되고 싶은가</FieldLabel>
+        <FieldLabel>가이드라인 - 이 영역에서 나는 어떤 사람이 되고 싶은가</FieldLabel>
         <input name="guideline" placeholder={EXAMPLES[pillar].guide} className="w-full" />
       </label>
       <button type="submit">추가</button>

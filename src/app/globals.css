@@ -10,36 +10,36 @@
    -ink 는 흰 배경과 -tint 배경 양쪽에서 WCAG AA(4.5) 통과.
    ───────────────────────────────────────────────────────── */
 @theme {
-  /* Work — 일 */
+  /* Work - 일 */
   --color-work: #009efa;
   --color-work-ink: #0075b9;
   --color-work-tint: #e8f7ff;
   --color-work-line: #b8e5ff;
 
-  /* Life — 삶 */
+  /* Life - 삶 */
   --color-life: #f76f3e;
   --color-life-ink: #c93b08;
   --color-life-tint: #feefe9;
   --color-life-line: #fcccba;
 
-  /* Money — 돈 */
+  /* Money - 돈 */
   --color-money: #00b59e;
   --color-money-ink: #008271;
   --color-money-tint: #e8fffc;
   --color-money-line: #b8fff6;
 
-  /* Spot 팔레트 — 사이드바·공용 UI */
+  /* Spot 팔레트 - 사이드바·공용 UI */
   --color-brand: #009efa;
   --color-brand-deep: #3b6896;
   --color-brand-mist: #daf3ff;
 
-  /* 다크 네이비 — 사이드바(슬랙식). 앱 아이콘 네이비 계열 */
+  /* 다크 네이비 - 사이드바(슬랙식). 앱 아이콘 네이비 계열 */
   --color-navy: #0e2a54;
   --color-navy-soft: #1b3d6e;
   --color-navy-text: #c9d8ee;
   --color-navy-faint: #7e97bd;
 
-  /* 타이포 스케일 — 기본 Tailwind보다 2단계 키움 (9/4 사용자 요청).
+  /* 타이포 스케일 - 기본 Tailwind보다 2단계 키움 (9/4 사용자 요청).
      본문·UI 텍스트(xs~lg)는 두 단계 그대로, 제목(xl~2xl)은 과대해지지
      않게 완만히 올림. 3xl 이상(랜딩 히어로)은 건드리지 않는다. */
   --text-xs: 1rem;
@@ -67,6 +67,9 @@ body {
   font-family:
     -apple-system, BlinkMacSystemFont, "Pretendard", "Apple SD Gothic Neo",
     "Malgun Gothic", "Segoe UI", sans-serif;
+  /* 한국어 줄바꿈을 단어(어절) 단위로 - 모바일에서 "관리하/는" 같은 어색한 분절 방지 */
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 /* 가운데 정렬 컨테이너(max-w) 안에서 뷰포트 전체 폭으로 탈출하는 밴드 */
@@ -80,7 +83,7 @@ textarea {
   @apply rounded-lg border border-neutral-300 bg-white px-2.5 py-1.5 text-sm outline-none focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900;
 }
 
-/* 한 줄 입력류는 높이를 통일 — 텍스트·날짜 입력과 드롭다운의 칸 높이가 어긋나지 않게 */
+/* 한 줄 입력류는 높이를 통일 - 텍스트·날짜 입력과 드롭다운의 칸 높이가 어긋나지 않게 */
 input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
 select {
   @apply h-11;

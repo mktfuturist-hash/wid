@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Card } from "@/components/ui";
 
-/* 마크다운 라이트 렌더 — ##제목·리스트만 예쁘게, 나머지는 그대로 */
+/* 마크다운 라이트 렌더 - ##제목·리스트만 예쁘게, 나머지는 그대로 */
 function MdView({ text }: { text: string }) {
   return (
     <div className="min-h-40 space-y-1 text-sm leading-relaxed">
@@ -30,7 +30,7 @@ function MdView({ text }: { text: string }) {
 const EDIT_BTN =
   "cursor-pointer rounded-lg border border-neutral-300 bg-white px-2 py-1 text-xs text-neutral-600 hover:bg-neutral-100";
 
-/* 계획·회고 — 작성 완료된 칸은 읽기 화면으로, 편집을 눌러야 입력창이 열린다 */
+/* 계획·회고 - 작성 완료된 칸은 읽기 화면으로, 편집을 눌러야 입력창이 열린다 */
 export function ReviewEditor({
   planMd,
   retroMd,

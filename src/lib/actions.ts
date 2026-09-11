@@ -129,7 +129,7 @@ export async function setLinkArchived(id: number, archived: boolean) {
   refresh();
 }
 
-/** 숏링크 삭제 — 클릭 로그도 함께 (어드민 전용) */
+/** 숏링크 삭제 - 클릭 로그도 함께 (어드민 전용) */
 export async function deleteShortLink(id: number) {
   if (!(await isAdmin())) return;
   await db.delete(linkClicks).where(eq(linkClicks.linkId, id));
@@ -210,7 +210,7 @@ const DEFAULT_CHANNELS = [
   },
 ];
 
-/** 채널 프리셋 기본 6종 채우기 (어드민 전용) — 이미 있는 건 건너뛴다 */
+/** 채널 프리셋 기본 6종 채우기 (어드민 전용) - 이미 있는 건 건너뛴다 */
 export async function seedUtmChannels() {
   if (!(await isAdmin())) return;
   const uid = await requireUserId();
@@ -624,7 +624,7 @@ export async function createRoutine(fd: FormData) {
   refresh();
 }
 
-/* 루틴 기간(시작~종료)만 변경 — 비우면 상시 루틴으로 */
+/* 루틴 기간(시작~종료)만 변경 - 비우면 상시 루틴으로 */
 export async function updateRoutinePeriod(id: number, fd: FormData) {
   const uid = await requireUserId();
   await db
@@ -651,7 +651,7 @@ export async function deleteRoutine(id: number) {
   refresh();
 }
 
-/** 원터치 루틴 기록 — 클릭 시각 자동 저장 (갓생 OS '루틴 기록' 버튼) */
+/** 원터치 루틴 기록 - 클릭 시각 자동 저장 (갓생 OS '루틴 기록' 버튼) */
 export async function logRoutine(id: number) {
   const uid = await requireUserId();
   if (!(await owns(routines, id, uid))) return;
@@ -837,7 +837,7 @@ export async function createAccount(fd: FormData) {
   refresh();
 }
 
-/** 잔액 수기 갱신 — 이번 달 스냅샷도 함께 기록 (순자산 추이의 원천) */
+/** 잔액 수기 갱신 - 이번 달 스냅샷도 함께 기록 (순자산 추이의 원천) */
 export async function updateAccountBalance(id: number, fd: FormData) {
   const uid = await requireUserId();
   const balance = num(fd, "balance");

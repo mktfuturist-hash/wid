@@ -92,7 +92,7 @@ export async function getGoalsWithProgress(uid: number): Promise<GoalWithProgres
         targetValue = myMs.length || null;
         break;
       case "manual":
-        // 시작값이 있으면 (현재-시작)/(목표-시작) — 감량처럼 줄어드는 목표도 올바르게 계산된다
+        // 시작값이 있으면 (현재-시작)/(목표-시작) - 감량처럼 줄어드는 목표도 올바르게 계산된다
         if (
           g.metricStart != null &&
           g.metricTarget != null &&

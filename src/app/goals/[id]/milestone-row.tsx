@@ -10,7 +10,7 @@ type Milestone = {
   done: boolean;
 };
 
-/* 중간 목표 한 줄 — 오른쪽 편집/삭제 버튼, 편집 시 이름·날짜 그 자리에서 수정 */
+/* 중간 목표 한 줄 - 오른쪽 편집/삭제 버튼, 편집 시 이름·날짜 그 자리에서 수정 */
 export function MilestoneRow({
   milestone: m,
   toggleAction,

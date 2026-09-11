@@ -6,7 +6,7 @@ import Google from "next-auth/providers/google";
    예전에는 `AUTH_GOOGLE_ID && AUTH_GOOGLE_SECRET` 유무만 봤다. 그래서 배포 환경에
    환경변수를 빠뜨리거나 이름을 한 글자 틀리면, 앱이 **에러 없이 조용히 로컬 모드**로
    돌았다. 그 상태에서는 `requireUserId()` 가 개발용 사용자를 내주고 `isAdmin()` 이
-   모두에게 true 를 반환해서 — 어드민 화면의 가입자 명단과 삭제 기능이 전부 공개된다.
+   모두에게 true 를 반환해서 - 어드민 화면의 가입자 명단과 삭제 기능이 전부 공개된다.
 
    그래서 판단 기준을 뒤집었다. 프로덕션이면 인증은 무조건 켜진 것으로 본다.
    자격 증명이 없으면 아무도 로그인하지 못할 뿐(= 닫히는 쪽으로 실패),
@@ -22,7 +22,7 @@ export const authEnabled = isProd || hasGoogleCreds;
 
 if (isProd && !hasGoogleCreds) {
   console.error(
-    "[auth] 프로덕션인데 AUTH_GOOGLE_ID/SECRET 이 없습니다 — 로그인이 동작하지 않습니다. Vercel 환경변수를 확인하세요."
+    "[auth] 프로덕션인데 AUTH_GOOGLE_ID/SECRET 이 없습니다 - 로그인이 동작하지 않습니다. Vercel 환경변수를 확인하세요."
   );
 }
 
@@ -35,15 +35,15 @@ function resolveSecret(): string {
   if (fromEnv) return fromEnv;
   if (!isProd) return "dev-only-secret";
   console.error(
-    "[auth] 프로덕션인데 AUTH_SECRET 이 없습니다 — 부팅마다 임의 키를 씁니다. 로그인이 계속 풀린다면 이 값을 설정하세요."
+    "[auth] 프로덕션인데 AUTH_SECRET 이 없습니다 - 부팅마다 임의 키를 씁니다. 로그인이 계속 풀린다면 이 값을 설정하세요."
   );
-  // 이 파일은 Edge(미들웨어)에서도 로드된다 — node:crypto 말고 Web Crypto를 쓴다
+  // 이 파일은 Edge(미들웨어)에서도 로드된다 - node:crypto 말고 Web Crypto를 쓴다
   const bytes = new Uint8Array(32);
   globalThis.crypto.getRandomValues(bytes);
   return btoa(String.fromCharCode(...bytes));
 }
 
-// Edge(미들웨어)에서도 안전한 설정만 — DB를 만지는 콜백은 auth.ts에서 추가한다.
+// Edge(미들웨어)에서도 안전한 설정만 - DB를 만지는 콜백은 auth.ts에서 추가한다.
 export const authConfig: NextAuthConfig = {
   secret: resolveSecret(),
   trustHost: true,

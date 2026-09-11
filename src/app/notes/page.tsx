@@ -9,7 +9,7 @@ import { toKstDate } from "@/lib/routine-stats";
 
 export const dynamic = "force-dynamic";
 
-/* 카드 미리보기용 — 마크다운 기호를 걷어내고 순수 텍스트만 */
+/* 카드 미리보기용 - 마크다운 기호를 걷어내고 순수 텍스트만 */
 function previewText(md: string): string {
   return md
     .replace(/^#{1,6}\s*/gm, "")

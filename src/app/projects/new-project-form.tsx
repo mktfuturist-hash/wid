@@ -6,7 +6,7 @@ import { FieldLabel } from "@/components/ui";
 type AreaOpt = { id: number; name: string; icon: string | null };
 type GoalOpt = { id: number; title: string; areaId: number | null };
 
-/* 새 프로젝트 입력 폼 — 영역을 고르면 연결 목표 드롭다운이 그 영역의 목표만 보여준다.
+/* 새 프로젝트 입력 폼 - 영역을 고르면 연결 목표 드롭다운이 그 영역의 목표만 보여준다.
    PC 기준: 1행 = 제목 + 영역·연결 목표, 2행 = 프로젝트 이름·시작일·종료일 */
 export function NewProjectForm({
   areas,

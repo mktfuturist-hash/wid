@@ -6,9 +6,9 @@ import { currentUser, isAdmin } from "@/lib/session";
 import { authEnabled } from "@/auth.config";
 
 export const metadata: Metadata = {
-  title: "WID — 라이프 플래너",
+  title: "WID - 라이프 플래너",
   description:
-    "What I Do makes me Wiser. — 오늘 입력한 행동이 모여 내일의 나를 더 현명하게. Work·Life·Money 세 기둥 목표관리",
+    "What I Do makes me Wiser. - 오늘 입력한 행동이 모여 내일의 나를 더 현명하게. Work·Life·Money 세 기둥 목표관리",
   appleWebApp: { capable: true, title: "WID", statusBarStyle: "default" },
 };
 
@@ -27,7 +27,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="ko" className="h-full antialiased">
       <body className="min-h-full bg-neutral-50 text-neutral-900">
-        {/* GA4 — NEXT_PUBLIC_GA_ID 설정 시에만 로드. 유입·행동·이탈 측정 (UTM은 GA가 자동 수집) */}
+        {/* GA4 - NEXT_PUBLIC_GA_ID 설정 시에만 로드. 유입·행동·이탈 측정 (UTM은 GA가 자동 수집) */}
         {gaId && (
           <>
             <Script

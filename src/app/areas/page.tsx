@@ -8,7 +8,7 @@ import { NewAreaForm } from "./new-area-form";
 
 export const dynamic = "force-dynamic";
 
-/* 분류 섹션 헤더 밴드 — 컬러 음영을 가로로 길게 깔아 영역 구분을 또렷하게 */
+/* 분류 섹션 헤더 밴드 - 컬러 음영을 가로로 길게 깔아 영역 구분을 또렷하게 */
 const BAND: Record<Pillar, string> = {
   work: "bg-work-tint text-work-ink",
   life: "bg-life-tint text-life-ink",

@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { db, shortLinks, linkClicks } from "@/db";
 import { users } from "@/db/schema";
 
-/* 링크 프리뷰 봇 — 슬랙·카톡 등에 링크를 올리면 사람이 누르기 전에
+/* 링크 프리뷰 봇 - 슬랙·카톡 등에 링크를 올리면 사람이 누르기 전에
    봇이 먼저 URL을 긁어서 미리보기 카드를 만든다. 그대로 두면 아무도
    안 눌러도 클릭이 찍힌다. 슬랙 채널 세 곳에 올리면 유령 클릭 3개로 시작.
 
@@ -28,7 +28,7 @@ export async function logClick(linkId: number, req: Request): Promise<void> {
       referer: req.headers.get("referer"),
     });
   } catch {
-    // 집계 실패는 무시 — 사람은 보내야 한다
+    // 집계 실패는 무시 - 사람은 보내야 한다
   }
 }
 
@@ -58,7 +58,7 @@ export async function ensureOutboundLink(
       .returning({ id: shortLinks.id });
     return created?.id ?? null;
   } catch {
-    // 동시 요청이 먼저 만들었을 수 있다 — 다시 찾아본다
+    // 동시 요청이 먼저 만들었을 수 있다 - 다시 찾아본다
     const [again] = await db.select().from(shortLinks).where(eq(shortLinks.code, code));
     return again?.id ?? null;
   }

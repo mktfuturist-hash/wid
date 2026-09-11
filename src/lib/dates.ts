@@ -30,14 +30,14 @@ export function fmtDate(d: string | null): string {
   return `${y}.${m}.${day}`;
 }
 
-/** 좁은 자리(모바일)용 짧은 날짜 — 9/6 */
+/** 좁은 자리(모바일)용 짧은 날짜 - 9/6 */
 export function fmtDateShort(d: string | null): string {
   if (!d) return "";
   const [, m, day] = d.split("-");
   return `${Number(m)}/${Number(day)}`;
 }
 
-/** 날짜에 일수를 더한 YYYY-MM-DD (KST 무관 — 순수 날짜 연산) */
+/** 날짜에 일수를 더한 YYYY-MM-DD (KST 무관 - 순수 날짜 연산) */
 export function addDays(d: string, days: number): string {
   const t = new Date(d + "T00:00:00Z").getTime() + days * 86400000;
   return new Date(t).toISOString().slice(0, 10);

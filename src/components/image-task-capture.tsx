@@ -8,7 +8,7 @@ import { Card, FieldLabel } from "@/components/ui";
 type ProjectOpt = { id: number; title: string };
 type Row = ParsedTask & { checked: boolean };
 
-/* 📷 이미지로 할 일 추출 — 스크린샷을 올리면 AI가 항목·날짜를 뽑고,
+/* 📷 이미지로 할 일 추출 - 스크린샷을 올리면 AI가 항목·날짜를 뽑고,
    확인·수정 후 한 번에 등록한다 */
 export function ImageTaskCapture({ projects }: { projects: ProjectOpt[] }) {
   const fileRef = useRef<HTMLInputElement>(null);
@@ -90,7 +90,7 @@ export function ImageTaskCapture({ projects }: { projects: ProjectOpt[] }) {
       {rows && (
         <div className="mt-4 space-y-3 border-t border-neutral-100 pt-3">
           <p className="text-xs text-neutral-400">
-            추출된 {rows.length}개 — 체크된 항목만 등록됩니다. 제목·날짜는 바로 수정할 수 있어요.
+            추출된 {rows.length}개 - 체크된 항목만 등록됩니다. 제목·날짜는 바로 수정할 수 있어요.
           </p>
           <ul className="space-y-1.5">
             {rows.map((r, i) => (

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { fmtDate, fmtDateShort } from "@/lib/dates";
 
-/** 날짜 표기 — 모바일에선 9/6, sm 이상에선 2026.09.06 */
+/** 날짜 표기 - 모바일에선 9/6, sm 이상에선 2026.09.06 */
 export function SmartDate({ date }: { date: string | null }) {
   if (!date) return null;
   return (
@@ -29,7 +29,7 @@ export function PillarChip({ pillar }: { pillar: Pillar }) {
   );
 }
 
-/* 특정 영역(예: 💼 커리어)을 분류 컬러 알약으로 표시 — 목표·프로젝트 카드용 */
+/* 특정 영역(예: 💼 커리어)을 분류 컬러 알약으로 표시 - 목표·프로젝트 카드용 */
 export function AreaChip({
   icon,
   name,
@@ -71,7 +71,7 @@ export function ProgressBar({
   );
 }
 
-/* 영역(일·삶·돈) 구분용 왼쪽 컬러 띠 — Card에 pillar를 넘기면 붙는다 */
+/* 영역(일·삶·돈) 구분용 왼쪽 컬러 띠 - Card에 pillar를 넘기면 붙는다 */
 const PILLAR_EDGE: Record<Pillar, string> = {
   work: "border-l-4 border-l-work",
   life: "border-l-4 border-l-life",

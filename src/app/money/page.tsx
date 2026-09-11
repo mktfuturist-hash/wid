@@ -6,6 +6,7 @@ import {
 } from "@/lib/actions";
 import { fmtDate, monthStr, todayStr } from "@/lib/dates";
 import { Card, Empty, SectionTitle } from "@/components/ui";
+import { NumberInput } from "@/components/number-input";
 
 export const dynamic = "force-dynamic";
 
@@ -110,7 +111,7 @@ export default async function MoneyPage() {
       <header>
         <h1 className="text-2xl font-bold">💰 머니보드</h1>
         <p className="mt-1 text-sm text-neutral-500">
-          자산은 월 1회 잔액 갱신, 지출은 그때그때 — 순자산과 저축률이 자동 계산됩니다.
+          자산은 월 1회 잔액 갱신, 지출은 그때그때 - 순자산과 저축률이 자동 계산됩니다.
         </p>
       </header>
 
@@ -156,7 +157,7 @@ export default async function MoneyPage() {
             <option value="expense">지출</option>
             <option value="income">수입</option>
           </select>
-          <input name="amount" placeholder="금액" required inputMode="numeric" className="w-28 text-right" />
+          <NumberInput name="amount" placeholder="금액" required className="w-32 text-right" />
           <input name="category" placeholder="카테고리" required list="cats" className="w-32" />
           <datalist id="cats">
             {EXPENSE_CATS.concat(INCOME_CATS).map((c) => (
@@ -228,7 +229,7 @@ export default async function MoneyPage() {
 
       {/* 자산 계좌 */}
       <Card>
-        <SectionTitle>자산 계좌 — 잔액을 갱신하면 이번 달 스냅샷이 기록됩니다</SectionTitle>
+        <SectionTitle>자산 계좌 - 잔액을 갱신하면 이번 달 스냅샷이 기록됩니다</SectionTitle>
         {accts.length > 0 && (
           <div className="mb-4 space-y-2">
             {accts.map((a) => (
@@ -243,10 +244,9 @@ export default async function MoneyPage() {
                 <span className="text-xs text-neutral-400">
                   {fmtDate(new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Seoul" }).format(a.updatedAt))} 갱신
                 </span>
-                <input
+                <NumberInput
                   name="balance"
                   defaultValue={a.balance}
-                  inputMode="numeric"
                   className="w-36 text-right tabular-nums"
                 />
                 <button type="submit" className="btn-ghost text-xs">갱신</button>
@@ -267,7 +267,7 @@ export default async function MoneyPage() {
             ))}
           </select>
           <input name="name" placeholder="계좌 이름 (예: 카카오뱅크 적금)" required className="min-w-48 flex-1" />
-          <input name="balance" placeholder="현재 잔액" inputMode="numeric" className="w-36 text-right" />
+          <NumberInput name="balance" placeholder="현재 잔액" className="w-36 text-right" />
           <button type="submit">추가</button>
         </form>
       </Card>

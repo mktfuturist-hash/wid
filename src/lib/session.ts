@@ -11,7 +11,7 @@ export async function requireUserId(): Promise<number> {
   return uid;
 }
 
-/** 어드민 여부 — users.is_admin 플래그로 판별 (환경변수·세션 이메일 의존 없음). 로컬(무인증)은 허용 */
+/** 어드민 여부 - users.is_admin 플래그로 판별 (환경변수·세션 이메일 의존 없음). 로컬(무인증)은 허용 */
 export async function isAdmin(): Promise<boolean> {
   if (!authEnabled) return true;
   const session = await auth();
@@ -24,7 +24,7 @@ export async function isAdmin(): Promise<boolean> {
   return !!u?.isAdmin;
 }
 
-/** 사이드바 표시용 — 미로그인/로컬이면 null */
+/** 사이드바 표시용 - 미로그인/로컬이면 null */
 export async function currentUser(): Promise<{
   name: string | null;
   email: string | null;

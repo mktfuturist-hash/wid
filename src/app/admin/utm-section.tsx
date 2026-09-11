@@ -105,7 +105,7 @@ export function UtmSection({
     } catch {
       // prompt 미지원 환경(PWA 등)도 있으니 실패해도 조용히 넘어간다
       try {
-        window.prompt("복사가 막혀 있어요 — 직접 복사하세요:", text);
+        window.prompt("복사가 막혀 있어요 - 직접 복사하세요:", text);
       } catch {}
       return false;
     }
@@ -131,12 +131,12 @@ export function UtmSection({
     startTransition(async () => {
       const { codes } = await createAction(fd);
       if (codes.length === 0) {
-        setMessage("생성에 실패했어요 — 입력을 확인해 주세요.");
+        setMessage("생성에 실패했어요 - 입력을 확인해 주세요.");
         return;
       }
       if (codes.length === 1) {
         await copy(shortUrl(codes[0]));
-        setMessage(`✅ 만들었어요 — ${shortUrl(codes[0])} (복사됨)`);
+        setMessage(`✅ 만들었어요 - ${shortUrl(codes[0])} (복사됨)`);
       } else {
         await copy(codes.map(shortUrl).join("\n"));
         setMessage(`✅ ${codes.length}개 링크를 만들었어요 (전부 복사됨)`);
@@ -168,7 +168,7 @@ export function UtmSection({
       <Card>
         <SectionTitle>🔗 UTM 링크 만들기</SectionTitle>
         <p className="-mt-1 mb-4 text-xs text-neutral-400">
-          채널을 고르고 만들기를 누르면 끝 — 짧은 링크가 바로 복사됩니다. 여러 채널을 고르면 같은 소재로 한 번에 만들어요.
+          채널을 고르고 만들기를 누르면 끝 - 짧은 링크가 바로 복사됩니다. 여러 채널을 고르면 같은 소재로 한 번에 만들어요.
         </p>
 
         {/* 1 · 채널 */}
@@ -241,7 +241,7 @@ export function UtmSection({
             <p className="mt-2 text-xs leading-relaxed text-neutral-400">
               프리셋은 <b className="text-neutral-500">적게 유지하는 게 좋습니다.</b> 슬랙 채널이 여러 개여도
               채널을 새로 만들지 말고 하나를 고른 뒤 <code className="rounded bg-neutral-100 px-1">content</code> 로
-              가르세요 — <code className="rounded bg-neutral-100 px-1">net_channel</code>{" "}
+              가르세요 - <code className="rounded bg-neutral-100 px-1">net_channel</code>{" "}
               <code className="rounded bg-neutral-100 px-1">team2</code>{" "}
               <code className="rounded bg-neutral-100 px-1">notice</code> 처럼요.
               같은 곳이 두 이름으로 갈리면 대시보드가 조각납니다.
@@ -273,11 +273,11 @@ export function UtmSection({
             <input value={content} onChange={(e) => setContent(e.target.value)} placeholder={suggestion || "채널을 먼저 고르세요"} className="w-40" />
           </label>
           <label className="min-w-44 flex-1">
-            <FieldLabel>메모 — 비우면 자동</FieldLabel>
+            <FieldLabel>메모 - 비우면 자동</FieldLabel>
             <input value={memo} onChange={(e) => setMemo(e.target.value)} placeholder="예: 9/13 첫 카드뉴스" className="w-full" />
           </label>
           <label>
-            <FieldLabel>만든 사람 — 브라우저가 기억</FieldLabel>
+            <FieldLabel>만든 사람 - 브라우저가 기억</FieldLabel>
             <input value={creator} onChange={(e) => setCreator(e.target.value)} placeholder="이름" className="w-28" />
           </label>
         </div>
@@ -343,7 +343,7 @@ export function UtmSection({
           링크 {filtered.length} · 클릭 {totals.clicks} · 가입 {totals.signups} · 전환 {pct(totals.signups, totals.clicks)}
         </p>
         {filtered.length === 0 ? (
-          <p className="py-6 text-center text-sm text-neutral-400">링크가 없어요 — 위에서 첫 링크를 만들어 보세요.</p>
+          <p className="py-6 text-center text-sm text-neutral-400">링크가 없어요 - 위에서 첫 링크를 만들어 보세요.</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
