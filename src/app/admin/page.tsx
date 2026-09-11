@@ -1,6 +1,9 @@
 import { notFound } from "next/navigation";
 import { headers } from "next/headers";
+import Link from "next/link";
 import { asc, desc, sql } from "drizzle-orm";
+import { getGaReport, type GaReport } from "@/lib/ga";
+import { addDays, todayStr } from "@/lib/dates";
 import { db, goals, projects, tasks, routines, shortLinks, linkClicks, utmChannels } from "@/db";
 import { users } from "@/db/schema";
 import { isAdmin, requireUserId } from "@/lib/session";
@@ -22,9 +25,38 @@ async function countByUser(table: typeof goals | typeof projects | typeof tasks 
   return new Map(rows.map((r) => [r.userId, r.c]));
 }
 
-export default async function AdminPage() {
+const TABS = [
+  { key: "users", label: "👥 사용자 관리" },
+  { key: "utm", label: "🔗 UTM 만들기" },
+  { key: "perf", label: "📒 채널별 성과" },
+  { key: "ga", label: "📈 GA 대시보드" },
+] as const;
+type TabKey = (typeof TABS)[number]["key"];
+
+const GA_RANGES = [
+  { key: "7d", label: "7일", days: 7 },
+  { key: "30d", label: "30일", days: 30 },
+  { key: "90d", label: "90일", days: 90 },
+] as const;
+
+export default async function AdminPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   if (!(await isAdmin())) notFound();
   const myId = await requireUserId();
+  const sp = await searchParams;
+  const tab: TabKey = (TABS.some((t) => t.key === sp.tab) ? sp.tab : "users") as TabKey;
+  const gaRangeKey = (GA_RANGES.some((r) => r.key === sp.range) ? sp.range : "30d") as string;
+
+  // GA 리포트는 GA 탭에서만 호출한다 (Data API 상한 절약)
+  let ga: GaReport | null = null;
+  if (tab === "ga") {
+    const days = GA_RANGES.find((r) => r.key === gaRangeKey)!.days;
+    const end = todayStr();
+    ga = await getGaReport({ startDate: addDays(end, -(days - 1)), endDate: end });
+  }
 
   const [userList, goalCnt, projectCnt, taskCnt, routineCnt, links, clickRows, channelList] = await Promise.all([
     db.select().from(users).orderBy(asc(users.id)),
@@ -100,6 +132,24 @@ export default async function AdminPage() {
         </p>
       </header>
 
+      {/* 탭 */}
+      <div className="flex flex-wrap gap-1.5">
+        {TABS.map((t) => (
+          <Link
+            key={t.key}
+            href={`/admin?tab=${t.key}`}
+            className={`rounded-full px-3.5 py-1.5 text-sm ${
+              tab === t.key
+                ? "bg-neutral-900 font-medium text-white"
+                : "bg-white text-neutral-500 hover:bg-neutral-100"
+            }`}
+          >
+            {t.label}
+          </Link>
+        ))}
+      </div>
+
+      {tab === "users" && (
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
         {[
           ["전체 사용자", userList.length],
@@ -114,20 +164,132 @@ export default async function AdminPage() {
           </Card>
         ))}
       </div>
+      )}
 
-      {/* UTM 링크 만들기 + 장부 */}
-      <UtmSection
-        channels={utmChannelData}
-        rows={utmRows}
-        origin={origin}
-        createAction={createUtmLinks}
-        archiveLinkAction={setLinkArchived}
-        deleteLinkAction={deleteShortLink}
-        createChannelAction={createUtmChannel}
-        archiveChannelAction={setChannelArchived}
-        seedChannelsAction={seedUtmChannels}
-      />
+      {/* UTM 만들기 / 채널별 성과 탭 */}
+      {(tab === "utm" || tab === "perf") && (
+        <UtmSection
+          channels={utmChannelData}
+          rows={utmRows}
+          origin={origin}
+          createAction={createUtmLinks}
+          archiveLinkAction={setLinkArchived}
+          deleteLinkAction={deleteShortLink}
+          createChannelAction={createUtmChannel}
+          archiveChannelAction={setChannelArchived}
+          seedChannelsAction={seedUtmChannels}
+          view={tab === "utm" ? "builder" : "ledger"}
+        />
+      )}
 
+      {/* GA 대시보드 탭 */}
+      {tab === "ga" && ga && (
+        <Card>
+          <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
+            <SectionTitle>📈 GA4 방문 데이터</SectionTitle>
+            <div className="flex gap-1.5">
+              {GA_RANGES.map((r) => (
+                <Link
+                  key={r.key}
+                  href={`/admin?tab=ga&range=${r.key}`}
+                  className={`rounded-full px-3 py-1 text-xs ${
+                    gaRangeKey === r.key
+                      ? "bg-neutral-900 text-white"
+                      : "bg-neutral-100 text-neutral-500 hover:bg-neutral-200"
+                  }`}
+                >
+                  {r.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+          <p className="mb-4 text-xs text-neutral-400">
+            채널별 성과 탭은 우리 서버가 센 클릭·가입이고, 여기는 GA4가 센 방문(세션)입니다.
+            광고 차단 브라우저는 빠지므로 조금 적게 나올 수 있어요.
+          </p>
+
+          {!ga.connected ? (
+            <div className="rounded-lg border border-dashed border-neutral-300 p-5 text-sm text-neutral-500">
+              <p className="font-medium">아직 GA Data API가 연동되지 않았어요.</p>
+              <p className="mt-1 break-all text-xs text-neutral-400">{ga.reason}</p>
+            </div>
+          ) : (
+            <>
+              {/* 요약 */}
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {[
+                  ["세션", ga.summary.sessions.toLocaleString(), "GA가 센 방문 수"],
+                  ["사용자", ga.summary.users.toLocaleString(), "중복 제외"],
+                  ["참여율", `${Math.round(ga.summary.engagementRate * 100)}%`, "튕기지 않은 방문 비율"],
+                  [ga.keyEventName, ga.summary.keyEvents.toLocaleString(), "핵심 이벤트 수"],
+                ].map(([label, value, hint]) => (
+                  <div key={label as string} className="rounded-lg border border-neutral-100 p-3 text-center">
+                    <div className="text-2xl font-bold tabular-nums">{value}</div>
+                    <div className="mt-0.5 text-xs font-medium text-neutral-500">{label}</div>
+                    <div className="text-[11px] text-neutral-300">{hint}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* 일별 세션 추이 */}
+              {ga.daily.length > 0 && (
+                <div className="mt-5">
+                  <h3 className="mb-2 text-xs font-semibold tracking-wide text-neutral-500">일별 세션</h3>
+                  <div className="flex h-24 items-end gap-1">
+                    {ga.daily.map((d) => {
+                      const max = Math.max(...ga!.connected ? ga!.daily.map((x) => x.sessions) : [1], 1);
+                      return (
+                        <div key={d.day} className="group flex min-w-0 flex-1 flex-col items-center gap-1" title={`${d.day} · 세션 ${d.sessions}`}>
+                          <div
+                            className="w-full rounded-t bg-brand/70 transition group-hover:bg-brand"
+                            style={{ height: `${Math.max(4, (d.sessions / max) * 88)}px` }}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div className="mt-1 flex justify-between text-[10px] tabular-nums text-neutral-300">
+                    <span>{ga.daily[0]?.day}</span>
+                    <span>{ga.daily[ga.daily.length - 1]?.day}</span>
+                  </div>
+                </div>
+              )}
+
+              {/* 소스 / 매체 / 캠페인 */}
+              <div className="mt-5 overflow-x-auto">
+                <h3 className="mb-2 text-xs font-semibold tracking-wide text-neutral-500">소스 / 매체별</h3>
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-neutral-200 text-left text-xs text-neutral-400">
+                      <th className="py-2 pr-3 font-medium">소스 / 매체</th>
+                      <th className="py-2 pr-3 font-medium">캠페인</th>
+                      <th className="py-2 pr-3 text-right font-medium">세션</th>
+                      <th className="py-2 pr-3 text-right font-medium">사용자</th>
+                      <th className="py-2 text-right font-medium">{ga.keyEventName}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {ga.sources.map((s, i) => (
+                      <tr key={i} className="border-b border-neutral-100">
+                        <td className="py-2 pr-3 font-mono text-xs">{s.source} / {s.medium}</td>
+                        <td className="py-2 pr-3 text-xs text-neutral-500">{s.campaign}</td>
+                        <td className="py-2 pr-3 text-right tabular-nums">{s.sessions.toLocaleString()}</td>
+                        <td className="py-2 pr-3 text-right tabular-nums">{s.users.toLocaleString()}</td>
+                        <td className="py-2 text-right tabular-nums">{s.keyEvents.toLocaleString()}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p className="mt-3 text-[11px] text-neutral-300">
+                속성 {ga.propertyId} · 핵심 이벤트 {ga.keyEventName} · 5분 캐시 · GA는 (direct)/(none)처럼 출처를 모르는 방문도 보여줍니다
+              </p>
+            </>
+          )}
+        </Card>
+      )}
+
+      {tab === "users" && (
       <Card>
         <SectionTitle>사용자 ({userList.length})</SectionTitle>
         <div className="overflow-x-auto">
@@ -203,6 +365,7 @@ export default async function AdminPage() {
           </table>
         </div>
       </Card>
+      )}
     </div>
   );
 }

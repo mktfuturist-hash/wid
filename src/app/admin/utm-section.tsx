@@ -44,6 +44,7 @@ export function UtmSection({
   createChannelAction,
   archiveChannelAction,
   seedChannelsAction,
+  view = "all",
 }: {
   channels: UtmChannelData[];
   rows: UtmLinkRow[];
@@ -54,6 +55,8 @@ export function UtmSection({
   createChannelAction: (fd: FormData) => Promise<void>;
   archiveChannelAction: (id: number, archived: boolean) => Promise<void>;
   seedChannelsAction: () => Promise<void>;
+  /** 탭 분리용 - builder(만들기만) / ledger(장부만) / all */
+  view?: "all" | "builder" | "ledger";
 }) {
   const [selected, setSelected] = useState<number[]>([]);
   const [content, setContent] = useState("");
@@ -165,6 +168,7 @@ export function UtmSection({
   return (
     <>
       {/* ── 링크 만들기 ── */}
+      {view !== "ledger" && (
       <Card>
         <SectionTitle>🔗 UTM 링크 만들기</SectionTitle>
         <p className="-mt-1 mb-4 text-xs text-neutral-400">
@@ -317,8 +321,10 @@ export function UtmSection({
           {message && <p className="mt-2 text-sm text-emerald-700">{message}</p>}
         </div>
       </Card>
+      )}
 
       {/* ── 장부 ── */}
+      {view !== "builder" && (
       <Card>
         <SectionTitle>📒 장부</SectionTitle>
         <p className="-mt-1 mb-3 text-xs text-neutral-400">
@@ -404,6 +410,7 @@ export function UtmSection({
           </div>
         )}
       </Card>
+      )}
     </>
   );
 }
