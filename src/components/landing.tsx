@@ -2,9 +2,10 @@
 import Link from "next/link";
 import { dday, todayStr } from "@/lib/dates";
 import { PILLARS, type Pillar } from "@/components/ui";
+import { YearCountdown } from "@/components/year-countdown";
 
 import { KAKAO_CTA } from "@/lib/links";
-const DEADLINE = "2026-09-13";
+const DEADLINE = "2026-09-14";
 
 function isClosed(): boolean {
   if (process.env.EARLYBIRD_CLOSED === "1") return true;
@@ -45,6 +46,11 @@ function Cta({ closed }: { closed: boolean }) {
   }
   return (
     <div className="text-center">
+      {/* 가격 앵커 — 원가 대비 얼리버드 혜택 */}
+      <p className="mb-2.5 text-base">
+        <span className="text-neutral-400 line-through">월 4,900원</span>{" "}
+        <span className="font-extrabold text-red-600">→ 얼리버드 기간 한정 0원</span>
+      </p>
       <a
         href={KAKAO_CTA}
         target="_blank"
@@ -157,12 +163,14 @@ export function Landing() {
         <div className="mx-auto max-w-2xl space-y-6 px-4 pb-14 pt-14 text-center sm:pt-20">
           <div className="inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-4 py-1.5 text-sm font-semibold text-red-600">
             얼리버드 30명 한정
-            {!closed && d >= 0 && <span>· 9/13 마감 {d === 0 ? "D-day" : `D-${d}`}</span>}
+            {!closed && d >= 0 && <span>· 9/14 마감 {d === 0 ? "D-day" : `D-${d}`}</span>}
           </div>
           <h1 className="text-5xl font-extrabold leading-tight tracking-tight text-navy sm:text-6xl">
             멈추지 않는 <span className="text-brand">올해</span>
           </h1>
-          <p className="text-xl font-bold text-brand-deep">남은 4달, 100일 루틴 챌린지</p>
+          <p className="text-xl font-bold text-brand-deep">올해 마지막 100일, 루틴 챌린지</p>
+          {/* 올해가 얼마 안 남았다는 걸 초 단위로 체감시키는 카운트다운 */}
+          <YearCountdown />
           <p className="text-sm italic text-brand-deep/60">
             WID — &ldquo;What I Do makes me Wiser.&rdquo;
           </p>
@@ -227,8 +235,8 @@ export function Landing() {
           <div className="rounded-2xl border border-brand-mist bg-white p-6 text-center shadow-sm">
             <div className="mx-auto flex max-w-md items-center justify-between text-sm">
               <div>
-                <div className="text-2xl font-extrabold text-navy">9월 초</div>
-                <div className="text-xs text-neutral-400">목표 설정</div>
+                <div className="text-2xl font-extrabold text-navy">9월 중순</div>
+                <div className="text-xs text-neutral-400">목표 설정 · 시작</div>
               </div>
               <div className="h-px flex-1 bg-brand-mist" />
               <div className="px-2">
@@ -237,7 +245,7 @@ export function Landing() {
               </div>
               <div className="h-px flex-1 bg-brand-mist" />
               <div>
-                <div className="text-2xl font-extrabold text-navy">12월 중순</div>
+                <div className="text-2xl font-extrabold text-navy">12월 말</div>
                 <div className="text-xs text-neutral-400">올해 목표 완주</div>
               </div>
             </div>
