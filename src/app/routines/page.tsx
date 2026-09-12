@@ -118,121 +118,7 @@ export default async function RoutinesPage() {
         )}
       </section>
 
-      {/* ── 오늘 할 일 ── */}
-      <section>
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-neutral-500">
-            ✅ 오늘 할 일 ({dueTasks.length})
-            {overdue.length > 0 && <span className="ml-1.5 text-red-500">· 지연 {overdue.length}</span>}
-          </h2>
-          <Link href="/tasks" className="text-xs text-neutral-400 hover:text-neutral-600">
-            전체 할 일 →
-          </Link>
-        </div>
-
-        {/* 빠른 캡처 - 날짜 없이 저장하면 인박스로 */}
-        <Card className="mb-3">
-          <form action={createTask} className="flex gap-2">
-            <TrackSubmit event="task_create" params={{ from: "routines_quick" }} />
-            <input
-              name="title"
-              placeholder="⚡ 떠오르는 것을 바로 던지세요 (인박스로 저장)"
-              required
-              className="flex-1"
-            />
-            <button type="submit">저장</button>
-          </form>
-        </Card>
-
-        {dueTasks.length === 0 ? (
-          <Empty>
-            오늘 기한인 할 일이 없습니다 —{" "}
-            <Link href="/tasks?view=inbox" className="underline">인박스 정리하러 가기</Link>
-          </Empty>
-        ) : (
-          <Card className="divide-y divide-neutral-100 p-0">
-            {dueTasks.map((t) => {
-              const prj = projectOf(t.projectId);
-              return (
-                <div key={t.id} className="flex items-center gap-3 px-4 py-2.5">
-                  <form action={toggleTask.bind(null, t.id, true)}>
-                    <TrackSubmit event="task_complete" params={{ from: "routines" }} />
-                    <button
-                      className="flex h-5 w-5 items-center justify-center rounded-md border border-neutral-300 bg-white text-xs text-transparent hover:border-neutral-500"
-                      aria-label="완료"
-                    >
-                      ✓
-                    </button>
-                  </form>
-                  <span className="min-w-0 flex-1 truncate text-sm">{t.title}</span>
-                  {prj && (
-                    <Link
-                      href={`/projects/${prj.id}`}
-                      className="hidden max-w-40 truncate rounded bg-neutral-100 px-1.5 py-0.5 text-xs text-neutral-500 hover:text-neutral-700 sm:block"
-                    >
-                      📁 {prj.title}
-                    </Link>
-                  )}
-                  {t.dueDate && t.dueDate < today && (
-                    <span className="shrink-0 text-xs text-red-500">{ddayLabel(t.dueDate)}</span>
-                  )}
-                </div>
-              );
-            })}
-          </Card>
-        )}
-        {inboxCount > 0 && (
-          <p className="mt-2 text-xs text-neutral-400">
-            📥 인박스에 날짜 없는 할 일이 {inboxCount}개 있어요 —{" "}
-            <Link href="/tasks?view=inbox" className="underline">기한을 정해주세요</Link>
-          </p>
-        )}
-      </section>
-
-      {/* 이미지 → 할 일 추출 (AI) */}
-      <ImageTaskCapture
-        projects={prjs.filter((p) => p.status !== "done").map((p) => ({ id: p.id, title: p.title }))}
-      />
-
-      {/* ── 여기부터 루틴 관리 ── */}
-      <Card>
-        <SectionTitle>새 루틴</SectionTitle>
-        <form action={createRoutine} className="flex flex-wrap items-end gap-2">
-          <TrackSubmit event="routine_create" />
-          <label className="min-w-56 flex-1">
-            <FieldLabel>루틴 이름</FieldLabel>
-            <input name="title" placeholder="루틴 (예: 매일 아침 독서 30분)" required className="w-full" />
-          </label>
-          <label>
-            <FieldLabel>연결 목표</FieldLabel>
-            <select name="goalId" defaultValue="">
-              <option value="">연결 목표 없음</option>
-              {goalList.filter((g) => g.status === "active").map((g) => (
-                <option key={g.id} value={g.id}>🎯 {g.title}</option>
-              ))}
-            </select>
-          </label>
-          <label>
-            <FieldLabel>영역</FieldLabel>
-            <select name="areaId" defaultValue="">
-              <option value="">영역 없음</option>
-              {areaList.filter((a) => !a.archived).map((a) => (
-                <option key={a.id} value={a.id}>{a.icon} {a.name}</option>
-              ))}
-            </select>
-          </label>
-          <label>
-            <FieldLabel>기간 시작 (비우면 상시)</FieldLabel>
-            <input type="date" name="startDate" />
-          </label>
-          <label>
-            <FieldLabel>기간 종료</FieldLabel>
-            <input type="date" name="endDate" />
-          </label>
-          <button type="submit">추가</button>
-        </form>
-      </Card>
-
+      {/* ── 진행 중 루틴 (관리·히트맵) ── */}
       <section>
         <SectionTitle>진행 중 ({active.length})</SectionTitle>
         {active.length === 0 ? (
@@ -364,6 +250,122 @@ export default async function RoutinesPage() {
           </div>
         )}
       </section>
+
+      {/* ── 오늘 할 일 ── */}
+      <section>
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-sm font-semibold text-neutral-500">
+            ✅ 오늘 할 일 ({dueTasks.length})
+            {overdue.length > 0 && <span className="ml-1.5 text-red-500">· 지연 {overdue.length}</span>}
+          </h2>
+          <Link href="/tasks" className="text-xs text-neutral-400 hover:text-neutral-600">
+            전체 할 일 →
+          </Link>
+        </div>
+
+        {dueTasks.length === 0 ? (
+          <Empty>
+            오늘 기한인 할 일이 없습니다 —{" "}
+            <Link href="/tasks?view=inbox" className="underline">인박스 정리하러 가기</Link>
+          </Empty>
+        ) : (
+          <Card className="divide-y divide-neutral-100 p-0">
+            {dueTasks.map((t) => {
+              const prj = projectOf(t.projectId);
+              return (
+                <div key={t.id} className="flex items-center gap-3 px-4 py-2.5">
+                  <form action={toggleTask.bind(null, t.id, true)}>
+                    <TrackSubmit event="task_complete" params={{ from: "routines" }} />
+                    <button
+                      className="flex h-5 w-5 items-center justify-center rounded-md border border-neutral-300 bg-white text-xs text-transparent hover:border-neutral-500"
+                      aria-label="완료"
+                    >
+                      ✓
+                    </button>
+                  </form>
+                  <span className="min-w-0 flex-1 truncate text-sm">{t.title}</span>
+                  {prj && (
+                    <Link
+                      href={`/projects/${prj.id}`}
+                      className="hidden max-w-40 truncate rounded bg-neutral-100 px-1.5 py-0.5 text-xs text-neutral-500 hover:text-neutral-700 sm:block"
+                    >
+                      📁 {prj.title}
+                    </Link>
+                  )}
+                  {t.dueDate && t.dueDate < today && (
+                    <span className="shrink-0 text-xs text-red-500">{ddayLabel(t.dueDate)}</span>
+                  )}
+                </div>
+              );
+            })}
+          </Card>
+        )}
+        {inboxCount > 0 && (
+          <p className="mt-2 text-xs text-neutral-400">
+            📥 인박스에 날짜 없는 할 일이 {inboxCount}개 있어요 —{" "}
+            <Link href="/tasks?view=inbox" className="underline">기한을 정해주세요</Link>
+          </p>
+        )}
+      </section>
+
+      {/* ── 여기부터 추가·관리 ── */}
+      <Card>
+        <SectionTitle>할 일 빠른 추가 - 날짜 없이 저장하면 인박스로</SectionTitle>
+        <form action={createTask} className="flex gap-2">
+          <TrackSubmit event="task_create" params={{ from: "routines_quick" }} />
+          <input
+            name="title"
+            placeholder="⚡ 떠오르는 것을 바로 던지세요"
+            required
+            className="flex-1"
+          />
+          <button type="submit">저장</button>
+        </form>
+      </Card>
+
+      {/* 이미지 → 할 일 추출 (AI) */}
+      <ImageTaskCapture
+        projects={prjs.filter((p) => p.status !== "done").map((p) => ({ id: p.id, title: p.title }))}
+      />
+
+
+      <Card>
+        <SectionTitle>새 루틴</SectionTitle>
+        <form action={createRoutine} className="flex flex-wrap items-end gap-2">
+          <TrackSubmit event="routine_create" />
+          <label className="min-w-56 flex-1">
+            <FieldLabel>루틴 이름</FieldLabel>
+            <input name="title" placeholder="루틴 (예: 매일 아침 독서 30분)" required className="w-full" />
+          </label>
+          <label>
+            <FieldLabel>연결 목표</FieldLabel>
+            <select name="goalId" defaultValue="">
+              <option value="">연결 목표 없음</option>
+              {goalList.filter((g) => g.status === "active").map((g) => (
+                <option key={g.id} value={g.id}>🎯 {g.title}</option>
+              ))}
+            </select>
+          </label>
+          <label>
+            <FieldLabel>영역</FieldLabel>
+            <select name="areaId" defaultValue="">
+              <option value="">영역 없음</option>
+              {areaList.filter((a) => !a.archived).map((a) => (
+                <option key={a.id} value={a.id}>{a.icon} {a.name}</option>
+              ))}
+            </select>
+          </label>
+          <label>
+            <FieldLabel>기간 시작 (비우면 상시)</FieldLabel>
+            <input type="date" name="startDate" />
+          </label>
+          <label>
+            <FieldLabel>기간 종료</FieldLabel>
+            <input type="date" name="endDate" />
+          </label>
+          <button type="submit">추가</button>
+        </form>
+      </Card>
 
       {stopped.length > 0 && (
         <section>
