@@ -219,7 +219,11 @@ export function LoginCard({
         )}
 
         <div className="space-y-1.5 text-left text-xs leading-relaxed text-neutral-400">
-          <p>구글로 로그인하면 아래 개인정보 수집·이용에 동의한 것으로 봅니다.</p>
+          <p>
+            구글로 로그인하면{" "}
+            <Link href="/terms" className="underline hover:text-neutral-600">이용약관</Link>과 아래
+            개인정보 수집·이용에 동의한 것으로 봅니다.
+          </p>
           <ul className="list-disc pl-4">
             <li>항목: 이메일 주소, 이름, 프로필 사진 (구글 계정에서 제공)</li>
             <li>목적: 회원 식별 및 로그인, 사용자별 데이터 분리</li>

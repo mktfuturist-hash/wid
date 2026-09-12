@@ -299,6 +299,9 @@ export function Landing() {
             <Link href="/guide" className="underline hover:text-white">
               사용 설명서 미리 보기
             </Link>
+            <Link href="/terms" className="underline hover:text-white">
+              이용약관
+            </Link>
             <Link href="/privacy" className="underline hover:text-white">
               개인정보처리방침
             </Link>

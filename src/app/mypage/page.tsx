@@ -56,6 +56,9 @@ export default async function MyPage() {
           </div>
         </dl>
         <div className="mt-4 flex items-center gap-3">
+          <Link href="/terms" className="mr-3 text-xs text-neutral-400 underline hover:text-neutral-600">
+            이용약관
+          </Link>
           <Link href="/privacy" className="text-xs text-neutral-400 underline hover:text-neutral-600">
             개인정보 처리방침
           </Link>
