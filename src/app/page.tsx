@@ -64,8 +64,8 @@ export default async function Home() {
           <h2 className="font-bold">👋 처음 오셨나요?</h2>
           <p className="mt-1 text-sm text-neutral-600">
             입력을 시작하기 전에 <b>사용 설명서</b>를 먼저 읽어보세요. 데이터가 어떻게 연동되는지,
-            그리고 <b>영역 → 목표 → 중간 목표 → 프로젝트 → 할 일</b> 순서로 세팅하는 법을 5분 안에
-            안내합니다.
+            그리고 <b>최종 목표 → 세부 목표 → 중간 목표 → 프로젝트 → 할 일</b> 순서로 세팅하는 법을
+            5분 안에 안내합니다.
           </p>
           <Link
             href="/guide"
