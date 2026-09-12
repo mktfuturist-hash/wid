@@ -267,7 +267,9 @@ export function Landing() {
             왜 30명에게만 드리냐면요
           </h2>
           <p className="mx-auto max-w-lg text-[15px] leading-relaxed text-neutral-600">
-            함께 목표를 향해 달렸던 동기님들께 가장 먼저 열어드려요.
+            AI 학습, 다이어트, 책 읽기 - 올해 목표를 하나라도 세워본 분이라면 환영해요.
+            <br />
+            한 번이라도 올해 강의를 듣고 목표를 향해 달렸던 분이라면, 멈추지 않는 오늘을 함께 만들어봐요.
             <br />
             <b className="text-navy">첫 30명의 와이저(Wiser)가 남긴 피드백이 WID의 다음 버전을 만듭니다.</b>
           </p>
