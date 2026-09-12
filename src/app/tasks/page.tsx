@@ -133,7 +133,7 @@ export default async function TasksPage({
       <header>
         <h1 className="text-2xl font-bold">✅ 전체 할 일</h1>
         <p className="mt-1 text-sm text-neutral-500">
-          프로젝트에서 내려온 1회성 행동 전부 - 오늘 할 것은 ☀️ 오늘에서 체크하세요.
+          프로젝트에서 내려온 1회성 행동 전부 - 오늘 할 것은 🔁 데일리 루틴에서 체크하세요.
         </p>
       </header>
 

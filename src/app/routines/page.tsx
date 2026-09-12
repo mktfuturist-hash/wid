@@ -1,12 +1,15 @@
-import { asc, eq, inArray } from "drizzle-orm";
-import { db, routines, routineLogs, goals, areas } from "@/db";
+import Link from "next/link";
+import { and, asc, eq, inArray } from "drizzle-orm";
+import { db, routines, routineLogs, goals, areas, tasks, projects } from "@/db";
 import { requireUserId } from "@/lib/session";
 import {
-  createRoutine, logRoutine, unlogRoutineToday, setRoutineStatus, deleteRoutine, updateRoutinePeriod,
+  createRoutine, createTask, logRoutine, unlogRoutineToday, setRoutineStatus,
+  deleteRoutine, updateRoutinePeriod, toggleTask,
 } from "@/lib/actions";
 import { computeRoutineStats, toKstDate } from "@/lib/routine-stats";
-import { todayStr, fmtDate } from "@/lib/dates";
+import { todayStr, fmtDate, ddayLabel } from "@/lib/dates";
 import { Card, Empty, FieldLabel, SectionTitle } from "@/components/ui";
+import { ImageTaskCapture } from "@/components/image-task-capture";
 import { TrackSubmit } from "@/components/track";
 
 export const dynamic = "force-dynamic";
@@ -23,12 +26,16 @@ function periodDays(start: string, end: string): string[] {
   return out;
 }
 
+/* 🔁 데일리 루틴 - 하루의 실행 허브. 위쪽은 오늘 체크(루틴+오늘 할 일), 아래쪽은 루틴 관리 */
 export default async function RoutinesPage() {
   const uid = await requireUserId();
-  const [rts, goalList, areaList] = await Promise.all([
+  const today = todayStr();
+  const [rts, goalList, areaList, openTasks, prjs] = await Promise.all([
     db.select().from(routines).where(eq(routines.userId, uid)).orderBy(asc(routines.id)),
     db.select().from(goals).where(eq(goals.userId, uid)),
     db.select().from(areas).where(eq(areas.userId, uid)),
+    db.select().from(tasks).where(and(eq(tasks.userId, uid), eq(tasks.done, false))).orderBy(asc(tasks.dueDate), asc(tasks.id)),
+    db.select().from(projects).where(eq(projects.userId, uid)),
   ]);
   const logs = rts.length
     ? await db
@@ -42,8 +49,18 @@ export default async function RoutinesPage() {
   const statsOf = (id: number) =>
     computeRoutineStats(logs.filter((l) => l.routineId === id).map((l) => l.loggedAt));
 
+  // 오늘 체크 요약
+  const activeStats = active.map((r) => ({ r, st: statsOf(r.id) }));
+  const routineDone = activeStats.filter(({ st }) => st.doneToday).length;
+
+  // 오늘 기한 할 일 (+ 지연)
+  const dueTasks = openTasks.filter((t) => t.dueDate && t.dueDate <= today);
+  const overdue = dueTasks.filter((t) => t.dueDate! < today);
+  const inboxCount = openTasks.filter((t) => !t.projectId && !t.dueDate).length;
+  const projectOf = (id: number | null) => prjs.find((p) => p.id === id);
+
   // 우측 미니 히트맵용 최근 28일 날짜 (과거→오늘, KST)
-  const t0 = new Date(todayStr() + "T00:00:00+09:00").getTime();
+  const t0 = new Date(today + "T00:00:00+09:00").getTime();
   const miniDates = Array.from({ length: 28 }, (_, i) =>
     toKstDate(new Date(t0 - (27 - i) * 86400000))
   );
@@ -57,7 +74,7 @@ export default async function RoutinesPage() {
         <div>
           <h1 className="text-2xl font-bold">🔁 데일리 루틴</h1>
           <p className="mt-1 text-sm text-neutral-500">
-            매일 반복하는 행동 - 버튼 한 번으로 기록되고, 이어지면 스트릭이 쌓입니다.
+            {fmtDate(today)} - 오늘 체크할 루틴과 오늘 기한 할 일을 한 화면에서. 루틴 관리는 아래쪽에 있어요.
           </p>
         </div>
         <div className="flex gap-4 text-right">
@@ -72,6 +89,112 @@ export default async function RoutinesPage() {
         </div>
       </header>
 
+      {/* ── 오늘의 루틴 체크 ── */}
+      <section>
+        <SectionTitle>오늘의 루틴 ({routineDone}/{active.length})</SectionTitle>
+        {active.length === 0 ? (
+          <Empty>아직 루틴이 없습니다 - 아래 &lsquo;새 루틴&rsquo;에서 첫 루틴을 만들어 보세요.</Empty>
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            {activeStats.map(({ r, st }) =>
+              st.doneToday ? (
+                <form key={r.id} action={unlogRoutineToday.bind(null, r.id)}>
+                  <TrackSubmit event="routine_uncheck" params={{ from: "routines" }} />
+                  <button className="flex items-center gap-1.5 rounded-full bg-emerald-500 px-3.5 py-1.5 text-sm font-medium text-white shadow-sm">
+                    ✓ {r.title}
+                    {st.streak > 1 && <span className="text-xs opacity-80">🔥{st.streak}</span>}
+                  </button>
+                </form>
+              ) : (
+                <form key={r.id} action={logRoutine.bind(null, r.id)}>
+                  <TrackSubmit event="routine_check" params={{ from: "routines", streak: st.streak + 1 }} />
+                  <button className="flex items-center gap-1.5 rounded-full border border-dashed border-neutral-300 bg-white px-3.5 py-1.5 text-sm text-neutral-500 hover:border-emerald-400 hover:text-emerald-600">
+                    {r.title}
+                  </button>
+                </form>
+              )
+            )}
+          </div>
+        )}
+      </section>
+
+      {/* ── 오늘 할 일 ── */}
+      <section>
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-sm font-semibold text-neutral-500">
+            ✅ 오늘 할 일 ({dueTasks.length})
+            {overdue.length > 0 && <span className="ml-1.5 text-red-500">· 지연 {overdue.length}</span>}
+          </h2>
+          <Link href="/tasks" className="text-xs text-neutral-400 hover:text-neutral-600">
+            전체 할 일 →
+          </Link>
+        </div>
+
+        {/* 빠른 캡처 - 날짜 없이 저장하면 인박스로 */}
+        <Card className="mb-3">
+          <form action={createTask} className="flex gap-2">
+            <TrackSubmit event="task_create" params={{ from: "routines_quick" }} />
+            <input
+              name="title"
+              placeholder="⚡ 떠오르는 것을 바로 던지세요 (인박스로 저장)"
+              required
+              className="flex-1"
+            />
+            <button type="submit">저장</button>
+          </form>
+        </Card>
+
+        {dueTasks.length === 0 ? (
+          <Empty>
+            오늘 기한인 할 일이 없습니다 —{" "}
+            <Link href="/tasks?view=inbox" className="underline">인박스 정리하러 가기</Link>
+          </Empty>
+        ) : (
+          <Card className="divide-y divide-neutral-100 p-0">
+            {dueTasks.map((t) => {
+              const prj = projectOf(t.projectId);
+              return (
+                <div key={t.id} className="flex items-center gap-3 px-4 py-2.5">
+                  <form action={toggleTask.bind(null, t.id, true)}>
+                    <TrackSubmit event="task_complete" params={{ from: "routines" }} />
+                    <button
+                      className="flex h-5 w-5 items-center justify-center rounded-md border border-neutral-300 bg-white text-xs text-transparent hover:border-neutral-500"
+                      aria-label="완료"
+                    >
+                      ✓
+                    </button>
+                  </form>
+                  <span className="min-w-0 flex-1 truncate text-sm">{t.title}</span>
+                  {prj && (
+                    <Link
+                      href={`/projects/${prj.id}`}
+                      className="hidden max-w-40 truncate rounded bg-neutral-100 px-1.5 py-0.5 text-xs text-neutral-500 hover:text-neutral-700 sm:block"
+                    >
+                      📁 {prj.title}
+                    </Link>
+                  )}
+                  {t.dueDate && t.dueDate < today && (
+                    <span className="shrink-0 text-xs text-red-500">{ddayLabel(t.dueDate)}</span>
+                  )}
+                </div>
+              );
+            })}
+          </Card>
+        )}
+        {inboxCount > 0 && (
+          <p className="mt-2 text-xs text-neutral-400">
+            📥 인박스에 날짜 없는 할 일이 {inboxCount}개 있어요 —{" "}
+            <Link href="/tasks?view=inbox" className="underline">기한을 정해주세요</Link>
+          </p>
+        )}
+      </section>
+
+      {/* 이미지 → 할 일 추출 (AI) */}
+      <ImageTaskCapture
+        projects={prjs.filter((p) => p.status !== "done").map((p) => ({ id: p.id, title: p.title }))}
+      />
+
+      {/* ── 여기부터 루틴 관리 ── */}
       <Card>
         <SectionTitle>새 루틴</SectionTitle>
         <form action={createRoutine} className="flex flex-wrap items-end gap-2">
@@ -116,8 +239,7 @@ export default async function RoutinesPage() {
           <Empty>루틴이 없습니다. 목표 달성을 위해 꾸준히 할 것을 추가해 보세요.</Empty>
         ) : (
           <div className="space-y-3">
-            {active.map((r) => {
-              const st = statsOf(r.id);
+            {activeStats.map(({ r, st }) => {
               const goal = goalList.find((g) => g.id === r.goalId);
               const hasPeriod = !!(r.startDate && r.endDate);
               const daySet = new Set(
@@ -125,7 +247,6 @@ export default async function RoutinesPage() {
               );
               const days = hasPeriod ? periodDays(r.startDate!, r.endDate!) : [];
               const doneInPeriod = days.filter((d) => daySet.has(d)).length;
-              const today = todayStr();
               return (
                 <Card key={r.id}>
                   <div className="flex items-center gap-3">

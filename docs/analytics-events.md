@@ -21,9 +21,9 @@
 | ⭐ `sign_up` | 구글 첫 로그인으로 users 행이 **새로 생성**된 직후 (JWT `signedUpAt` 30분 이내 + localStorage 가드) | `method: "google"` | 평생 1회 |
 | `login` | 로그인 상태로 앱 진입 | `method` | 브라우저 세션당 1회 |
 | `cta_click` | 랜딩 얼리버드 CTA 클릭 | `from: hero \| header \| final` | 매번 |
-| `task_create` | 할 일 저장 폼 제출 | `from: today_quick \| tasks` | 매번 |
-| `task_complete` | 할 일 완료 체크 (완료→미완 되돌림은 제외) | `from: today \| tasks` | 매번 |
-| `routine_check` | 루틴 오늘 체크 | `from: today \| routines`, `streak`(체크 후 연속일) | 매번 |
+| `task_create` | 할 일 저장 폼 제출 | `from: routines_quick \| tasks` | 매번 |
+| `task_complete` | 할 일 완료 체크 (완료→미완 되돌림은 제외) | `from: routines \| tasks` | 매번 |
+| `routine_check` | 루틴 오늘 체크 | `from: routines`, `streak`(체크 후 연속일) | 매번 |
 | `routine_uncheck` | 오늘 체크 취소 (오입력 비율 파악용) | `from` | 매번 |
 | `ai_tasks_extract` | 이미지→할 일 AI 추출 결과를 실제 등록했을 때 | `count`(등록 개수) | 매번 |
 | `area_create` | 최종 목표(영역) 추가 | - | 매번 |

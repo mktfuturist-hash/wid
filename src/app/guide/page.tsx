@@ -122,7 +122,7 @@ export default function GuidePage() {
         <Card>
           <h3 className="mb-2 text-sm font-bold">🧭 메뉴는 세 묶음입니다</h3>
           <ul className="list-disc space-y-1.5 pl-5 text-sm leading-relaxed text-neutral-600">
-            <li><b>오늘을 움직이는 실행</b> - ☀️ 오늘 · ✅ 전체 할 일 · 🔁 데일리 루틴. 매일 여는 화면들입니다.</li>
+            <li><b>오늘을 움직이는 실행</b> - 🔁 데일리 루틴 · ✅ 전체 할 일. 매일 여는 화면들입니다.</li>
             <li><b>내 인생의 지도</b> - 🚩 최종 목표 · 🎯 세부 목표 · 📁 프로젝트. 어디로 갈지 정하는 화면들입니다.</li>
             <li><b>쌓아두고 돌아보기</b> - 📝 노트 · 🪞 계획·회고 · 💰 머니. 기록이 쌓이는 화면들입니다.</li>
           </ul>
@@ -220,7 +220,7 @@ export default function GuidePage() {
           <Step no={5} title="✅ 할 일 채우기 - 계획은 곧 할 일 목록" href="/tasks" cta="전체 할 일 입력하러 가기">
             <p>
               프로젝트 상세에 들어가 <b>그 프로젝트를 완수하기 위한 할 일을 전부 나열</b>하세요.
-              이 과정이 곧 계획입니다. 각 할 일에 기한을 붙이면 그날 <b>☀️ 오늘</b> 화면에 자동으로 나타납니다.
+              이 과정이 곧 계획입니다. 각 할 일에 기한을 붙이면 그날 <b>🔁 데일리 루틴</b> 화면의 오늘 할 일에 자동으로 나타납니다.
             </p>
             <p>
               프로젝트와 무관하게 갑자기 떠오르는 일은 <b>입력창에 그냥 던지세요.</b> 자동으로
@@ -259,14 +259,14 @@ export default function GuidePage() {
       <section className="space-y-4">
         <h2 className="text-xl font-bold">3. 세팅이 끝나면 - 매일의 사용 루프</h2>
         <p className="text-sm leading-relaxed text-neutral-600">
-          하루의 실행은 <Link href="/today" className="font-semibold underline">☀️ 오늘</Link> 화면
-          하나로 끝납니다 - 오늘의 데일리 루틴 체크와 오늘 기한 할 일 처리가 한 화면에 모여 있어요.
+          하루의 실행은 <Link href="/routines" className="font-semibold underline">🔁 데일리 루틴</Link> 화면
+          하나로 끝납니다 - 오늘의 루틴 체크와 오늘 기한 할 일 처리가 한 화면에 모여 있어요.
         </p>
         <div className="grid gap-3 sm:grid-cols-2">
           <Card>
             <h3 className="text-sm font-bold">☀️ 아침 (1분)</h3>
             <ul className="mt-2 list-disc space-y-1 pl-4 text-sm text-neutral-600">
-              <li><Link href="/today" className="underline">오늘</Link> 화면에서 <b>오늘 할 일</b> 확인</li>
+              <li><Link href="/routines" className="underline">데일리 루틴</Link> 화면에서 <b>루틴·오늘 할 일</b> 확인</li>
               <li>필요하면 <Link href="/reviews" className="underline">일간 계획</Link> 작성 - 오늘의 최우선 3가지</li>
             </ul>
           </Card>
@@ -275,7 +275,7 @@ export default function GuidePage() {
             <ul className="mt-2 list-disc space-y-1 pl-4 text-sm text-neutral-600">
               <li>떠오르는 생각·할 일 → 입력창에 <b>던지기</b> (자동으로 인박스행)</li>
               <li>지출 발생 → <Link href="/money" className="underline">가계부</Link>에 금액·카테고리 기록</li>
-              <li>루틴 실행 → <Link href="/today" className="underline">오늘</Link>에서 <b>칩 클릭</b> 한 번</li>
+              <li>루틴 실행 → <Link href="/routines" className="underline">데일리 루틴</Link>에서 <b>칩 클릭</b> 한 번</li>
             </ul>
           </Card>
           <Card>
