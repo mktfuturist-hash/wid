@@ -15,7 +15,8 @@ export async function middleware(req: NextRequest) {
   if (
     PUBLIC_PATHS.includes(pathname) ||
     pathname.startsWith("/api/auth") ||
-    pathname.startsWith("/l/") // UTM 숏링크 리다이렉트 - 비로그인도 통과
+    pathname.startsWith("/l/") || // UTM 숏링크 리다이렉트 - 비로그인도 통과
+    pathname.startsWith("/go/") // 나가는 링크(랜딩 CTA → 카톡방) - 비로그인이 누르는 자리다
   ) {
     return NextResponse.next();
   }
