@@ -2,7 +2,7 @@ import Link from "next/link";
 import { and, asc, eq, inArray } from "drizzle-orm";
 import { db, areas, tasks, routines, routineLogs } from "@/db";
 import { getGoalsWithProgress } from "@/lib/progress";
-import { createTask, toggleTask, logRoutine, unlogRoutineToday } from "@/lib/actions";
+import { toggleTask, logRoutine, unlogRoutineToday } from "@/lib/actions";
 import { computeRoutineStats } from "@/lib/routine-stats";
 import { requireUserId } from "@/lib/session";
 import { auth, authEnabled } from "@/auth";
@@ -75,19 +75,6 @@ export default async function Home() {
           </Link>
         </div>
       )}
-
-      {/* 인박스 빠른 던지기 */}
-      <Card>
-        <form action={createTask} className="flex gap-2">
-          <input
-            name="title"
-            placeholder="⚡ 떠오르는 것을 바로 던지세요 (인박스로 저장)"
-            required
-            className="flex-1"
-          />
-          <button type="submit">저장</button>
-        </form>
-      </Card>
 
       {/* 일 │ 삶 │ 돈 3열: 각 기둥의 목표 진척 */}
       <div className="grid gap-4 lg:grid-cols-3">
