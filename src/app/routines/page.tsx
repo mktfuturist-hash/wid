@@ -26,7 +26,7 @@ function periodDays(start: string, end: string): string[] {
   return out;
 }
 
-/* 🔁 데일리 루틴 - 하루의 실행 허브. 위쪽은 오늘 체크(루틴+오늘 할 일), 아래쪽은 루틴 관리 */
+/* 🔁 오늘의 루틴 - 하루의 실행 허브. 위쪽은 오늘 체크(루틴+오늘 할 일), 아래쪽은 루틴 관리 */
 export default async function RoutinesPage() {
   const uid = await requireUserId();
   const today = todayStr();
@@ -72,7 +72,7 @@ export default async function RoutinesPage() {
     <div className="space-y-8">
       <header className="flex items-end justify-between">
         <div>
-          <h1 className="text-2xl font-bold">🔁 데일리 루틴</h1>
+          <h1 className="text-2xl font-bold">🔁 오늘의 루틴</h1>
           <p className="mt-1 text-sm text-neutral-500">
             {fmtDate(today)} - 오늘 체크할 루틴과 오늘 기한 할 일을 한 화면에서. 루틴 관리는 아래쪽에 있어요.
           </p>
@@ -91,7 +91,7 @@ export default async function RoutinesPage() {
 
       {/* ── 오늘의 루틴 체크 ── */}
       <section>
-        <SectionTitle>오늘의 루틴 ({routineDone}/{active.length})</SectionTitle>
+        <SectionTitle>루틴 체크 ({routineDone}/{active.length})</SectionTitle>
         {active.length === 0 ? (
           <Empty>아직 루틴이 없습니다 - 아래 &lsquo;새 루틴&rsquo;에서 첫 루틴을 만들어 보세요.</Empty>
         ) : (

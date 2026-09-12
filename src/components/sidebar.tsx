@@ -24,7 +24,7 @@ type NavItem = {
 /* 메뉴는 세 묶음 - 실행(오늘 움직인다) / 계획(어디로 갈지 정한다) / 기록(쌓아둔다) */
 const NAV: NavItem[] = [
   { href: "/", label: "홈", icon: "🏠" },
-  { href: "/routines", label: "데일리 루틴", icon: "🔁", group: true, groupLabel: "오늘을 움직이는 실행" },
+  { href: "/routines", label: "오늘의 루틴", icon: "🔁", group: true, groupLabel: "오늘을 움직이는 실행" },
   { href: "/tasks", label: "전체 할 일", icon: "✅" },
   // 계층: 최종 목표(영역) > 세부 목표 > 프로젝트 > 할 일
   { href: "/areas", label: "최종 목표", icon: "🚩", group: true, groupLabel: "내 인생의 지도" },
