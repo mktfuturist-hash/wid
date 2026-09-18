@@ -4,8 +4,8 @@ import { db, tasks, projects } from "@/db";
 import {
   createTask, toggleTask, deleteTask, setTaskDueToday,
 } from "@/lib/actions";
-import { todayStr, ddayLabel, fmtDate } from "@/lib/dates";
-import { Card, DdayBadge, Empty, SectionTitle } from "@/components/ui";
+import { todayStr, ddayLabel } from "@/lib/dates";
+import { Card, DdayBadge, Empty, SectionTitle, SmartDate } from "@/components/ui";
 import { requireUserId } from "@/lib/session";
 import { ImageTaskCapture } from "@/components/image-task-capture";
 import { TrackSubmit } from "@/components/track";
@@ -82,8 +82,8 @@ export default async function TasksPage({
         const prj = prjs.find((p) => p.id === t.projectId);
         const overdue = !t.done && t.dueDate && t.dueDate < today;
         return (
-          <div key={t.id} className="group flex items-center gap-3 px-4 py-2.5">
-            <form action={toggleTask.bind(null, t.id, !t.done)}>
+          <div key={t.id} className="group flex items-start gap-3 px-4 py-2.5 sm:items-center">
+            <form action={toggleTask.bind(null, t.id, !t.done)} className="pt-0.5 sm:pt-0">
               {!t.done && <TrackSubmit event="task_complete" params={{ from: "tasks" }} />}
               <button
                 className={`flex h-5 w-5 items-center justify-center rounded-md border text-xs ${
@@ -96,23 +96,26 @@ export default async function TasksPage({
                 ✓
               </button>
             </form>
-            <div className="min-w-0 flex-1">
-              <span className={`text-sm ${t.done ? "text-neutral-400 line-through" : ""}`}>
-                {t.title}
-              </span>
-              {prj && (
-                <span className="ml-2 rounded bg-neutral-100 px-1.5 py-0.5 text-xs text-neutral-500">
-                  📁 {prj.title}
+            {/* 모바일: 1줄 = 제목(전체 폭), 2줄 = 날짜·D-day·버튼 / PC(sm+): 기존처럼 한 줄 */}
+            <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1">
+              <div className="w-full min-w-0 sm:w-auto sm:flex-1">
+                <span className={`text-sm ${t.done ? "text-neutral-400 line-through" : ""}`}>
+                  {t.title}
+                </span>
+                {prj && (
+                  <span className="ml-2 inline-block max-w-full truncate rounded bg-neutral-100 px-1.5 py-0.5 align-bottom text-xs text-neutral-500">
+                    📁 {prj.title}
+                  </span>
+                )}
+              </div>
+              {t.dueDate && !t.done && (
+                <span className={`shrink-0 text-xs tabular-nums ${overdue ? "text-red-500" : "text-neutral-400"}`}>
+                  <SmartDate date={t.dueDate} />
                 </span>
               )}
-            </div>
-            {t.dueDate && !t.done && (
-              <span className={`text-xs tabular-nums ${overdue ? "text-red-500" : "text-neutral-400"}`}>
-                {fmtDate(t.dueDate)}
-              </span>
-            )}
-            {!t.done && <DdayBadge label={t.dueDate ? ddayLabel(t.dueDate) : ""} />}
-            <div className="invisible flex items-center gap-2 group-hover:visible">
+              {!t.done && <DdayBadge label={t.dueDate ? ddayLabel(t.dueDate) : ""} />}
+              {/* 터치 기기엔 호버가 없다 - 모바일은 상시 노출, PC는 호버 시 */}
+              <div className="ml-auto flex items-center gap-2 sm:ml-0 sm:invisible sm:group-hover:visible">
               {view === "inbox" && (
                 <form action={setTaskDueToday.bind(null, t.id)}>
                   <button className="text-xs text-neutral-400 hover:text-neutral-700">오늘로</button>
@@ -121,6 +124,7 @@ export default async function TasksPage({
               <form action={deleteTask.bind(null, t.id)}>
                 <button className="text-xs text-neutral-300 hover:text-red-500">삭제</button>
               </form>
+              </div>
             </div>
           </div>
         );

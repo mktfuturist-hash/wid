@@ -283,7 +283,17 @@ export default async function RoutinesPage() {
                       ✓
                     </button>
                   </form>
-                  <span className="min-w-0 flex-1 truncate text-sm">{t.title}</span>
+                  <div className="min-w-0 flex-1">
+                    <span className="block truncate text-sm">{t.title}</span>
+                    {prj && (
+                      <Link
+                        href={`/projects/${prj.id}`}
+                        className="mt-0.5 block w-fit max-w-full truncate rounded bg-neutral-100 px-1.5 py-0.5 text-xs text-neutral-500 hover:text-neutral-700 sm:hidden"
+                      >
+                        📁 {prj.title}
+                      </Link>
+                    )}
+                  </div>
                   {prj && (
                     <Link
                       href={`/projects/${prj.id}`}

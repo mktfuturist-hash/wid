@@ -59,7 +59,7 @@ export function MilestoneRow({
           ✓
         </button>
       </form>
-      <span className={`flex-1 text-sm ${m.done ? "text-neutral-400 line-through" : ""}`}>
+      <span className={`min-w-0 flex-1 text-sm ${m.done ? "text-neutral-400 line-through" : ""}`}>
         {m.title}
       </span>
       {m.dueDate && (
@@ -69,17 +69,21 @@ export function MilestoneRow({
         type="button"
         className="cursor-pointer rounded-lg border border-neutral-300 bg-white px-2 py-1 text-xs text-neutral-600 hover:bg-neutral-100"
         onClick={() => setEditing(true)}
+        aria-label="편집"
       >
-        편집
+        <span className="sm:hidden">✏️</span>
+        <span className="hidden sm:inline">편집</span>
       </button>
       <form action={deleteAction}>
         <button
           className="unstyled cursor-pointer rounded-lg border border-neutral-300 bg-white px-2 py-1 text-xs text-neutral-600 hover:border-red-200 hover:bg-red-50 hover:text-red-600"
           onClick={(e) => {
-            if (!window.confirm(`'${m.title}' 중간 목표을 삭제할까요?`)) e.preventDefault();
+            if (!window.confirm(`'${m.title}' 중간 목표를 삭제할까요?`)) e.preventDefault();
           }}
+          aria-label="삭제"
         >
-          삭제
+          <span className="sm:hidden">✕</span>
+          <span className="hidden sm:inline">삭제</span>
         </button>
       </form>
     </li>

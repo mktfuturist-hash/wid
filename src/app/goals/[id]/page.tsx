@@ -68,10 +68,11 @@ export default async function GoalDetail({
       </div>
 
       <header className="space-y-3">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex min-w-0 items-center gap-2.5">
+        {/* 모바일: 칩+제목 한 덩어리, D-day·달성 버튼은 아랫줄 - 제목이 잘리지 않게 */}
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
+          <div className="flex min-w-0 flex-wrap items-center gap-2.5">
             {area && <AreaChip icon={area.icon} name={area.name} pillar={area.pillar} />}
-            <h1 className="truncate text-2xl font-bold">{g.title}</h1>
+            <h1 className="min-w-0 text-2xl font-bold sm:truncate">{g.title}</h1>
           </div>
           <div className="flex shrink-0 items-center gap-2">
             <DdayBadge label={ddayLabel(g.dueDate, g.status === "done")} />
@@ -111,7 +112,9 @@ export default async function GoalDetail({
         {next && (
           <p className="text-sm text-neutral-500">
             🚩 다음 중간 목표: <b>{next.title}</b>
-            {next.dueDate && ` - ${fmtDate(next.dueDate)} (${ddayLabel(next.dueDate)})`}
+            {next.dueDate && (
+              <span className="whitespace-nowrap">{` - ${fmtDate(next.dueDate)} (${ddayLabel(next.dueDate)})`}</span>
+            )}
           </p>
         )}
       </header>
