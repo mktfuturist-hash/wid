@@ -9,11 +9,13 @@ import { users } from "@/db/schema";
 import { isAdmin, requireUserId } from "@/lib/session";
 import {
   adminDeleteUser, createUtmLinks, setLinkArchived, deleteShortLink,
-  createUtmChannel, setChannelArchived, seedUtmChannels,
+  createUtmChannel, setChannelArchived, seedUtmChannels, updateEarlybird,
 } from "@/lib/actions";
+import { getEarlybird } from "@/lib/earlybird";
 import { Card, SectionTitle } from "@/components/ui";
 import { ConfirmButton } from "@/components/confirm-button";
 import { UtmSection, type UtmChannelData, type UtmLinkRow } from "./utm-section";
+import { EarlybirdSection } from "./earlybird-section";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +29,7 @@ async function countByUser(table: typeof goals | typeof projects | typeof tasks 
 
 const TABS = [
   { key: "users", label: "👥 사용자 관리" },
+  { key: "earlybird", label: "🎟️ 얼리버드 설정" },
   { key: "utm", label: "🔗 UTM 만들기" },
   { key: "perf", label: "📒 채널별 성과" },
   { key: "ga", label: "📈 GA 대시보드" },
@@ -123,6 +126,8 @@ export default async function AdminPage({
       ? d.toLocaleString("ko-KR", { timeZone: "Asia/Seoul", dateStyle: "short", timeStyle: "short" })
       : "—";
 
+  const eb = await getEarlybird();
+
   return (
     <div className="space-y-8">
       <header>
@@ -164,6 +169,11 @@ export default async function AdminPage({
           </Card>
         ))}
       </div>
+      )}
+
+      {/* 얼리버드 설정 — 마감일·정원·가격 문구를 배포 없이 바꾼다 */}
+      {tab === "earlybird" && (
+        <EarlybirdSection value={eb} saveAction={updateEarlybird} today={todayStr()} />
       )}
 
       {/* UTM 만들기 / 채널별 성과 탭 */}

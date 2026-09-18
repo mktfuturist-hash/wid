@@ -6,6 +6,7 @@ import { and, eq, gte, inArray, lt } from "drizzle-orm";
 import {
   db, areas, goals, milestones, tasks, projects, kpis, routines, routineLogs,
   moneyAccounts, moneySnapshots, moneyTxns, notes, reviews, shortLinks, linkClicks, utmChannels,
+  earlybird,
 } from "@/db";
 import { randomBytes } from "crypto";
 import { monthStr, todayStr } from "@/lib/dates";
@@ -237,6 +238,41 @@ export async function seedUtmChannels() {
 export async function setChannelArchived(id: number, archived: boolean) {
   if (!(await isAdmin())) return;
   await db.update(utmChannels).set({ archived }).where(eq(utmChannels.id, id));
+  refresh();
+}
+
+/* 얼리버드 설정 저장 (어드민 전용).
+
+   이 액션 하나가 예전의 "코드 수정 → 커밋 → 배포" 3단계를 대신한다.
+   마감을 하루 미루는 데 더 이상 배포가 필요하지 않다. */
+export async function updateEarlybird(fd: FormData) {
+  if (!(await isAdmin())) return;
+
+  const deadline = str(fd, "deadline");
+  const capacity = Number(str(fd, "capacity"));
+  const priceAnchor = str(fd, "priceAnchor");
+  const priceNow = str(fd, "priceNow");
+  const forceClosed = fd.get("forceClosed") === "on";
+
+  // 형식이 어긋나면 저장하지 않는다 — 랜딩이 깨지면 안 되니까
+  if (!deadline || !/^\d{4}-\d{2}-\d{2}$/.test(deadline)) return;
+  if (!Number.isInteger(capacity) || capacity < 1 || capacity > 100000) return;
+  if (!priceAnchor || !priceNow) return;
+
+  const values = {
+    deadline,
+    capacity,
+    priceAnchor: priceAnchor.slice(0, 60),
+    priceNow: priceNow.slice(0, 60),
+    forceClosed,
+    updatedAt: new Date(),
+  };
+
+  await db
+    .insert(earlybird)
+    .values({ id: 1, ...values })
+    .onConflictDoUpdate({ target: earlybird.id, set: values });
+
   refresh();
 }
 

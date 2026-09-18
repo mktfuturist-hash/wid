@@ -279,4 +279,25 @@ export const moneyTxns = pgTable("money_txns", {
   category: text("category").notNull(),
   accountId: integer("account_id").references(() => moneyAccounts.id),
   memo: text("memo"),
+
+});
+
+/* 얼리버드 프로모션 설정 — 항상 한 행(id=1)만 쓴다.
+
+   원래는 landing.tsx 에 상수로 박혀 있었다. 그래서 마감을 하루 미룰 때마다
+   코드를 고치고 커밋하고 배포했다(9/10 · 9/12 · 9/15 세 번).
+   여기로 빼면 어드민에서 값만 바꾸면 끝난다. */
+export const earlybird = pgTable("earlybird", {
+  id: integer("id").primaryKey().default(1),
+  /** 마감일 YYYY-MM-DD. 이 날짜가 지나면 CTA가 모집 마감으로 바뀐다 */
+  deadline: text("deadline").notNull(),
+  /** 정원 — N명 한정 문구에 들어간다 */
+  capacity: integer("capacity").notNull(),
+  /** 참조점(정가) — 예: 월 4,900원 */
+  priceAnchor: text("price_anchor").notNull(),
+  /** 지금 값 — 예: 얼리버드 기간 한정 0원 */
+  priceNow: text("price_now").notNull(),
+  /** 마감일 전이라도 강제로 닫기 (정원이 먼저 찼을 때) */
+  forceClosed: boolean("force_closed").notNull().default(false),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

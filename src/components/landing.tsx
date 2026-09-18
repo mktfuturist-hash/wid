@@ -1,17 +1,17 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
-import { dday, todayStr } from "@/lib/dates";
 import { PILLARS, type Pillar } from "@/components/ui";
 import { YearCountdown } from "@/components/year-countdown";
 
 import { KAKAO_CTA } from "@/lib/links";
 import { TrackClick } from "@/components/track";
-const DEADLINE = "2026-09-18";
-
-function isClosed(): boolean {
-  if (process.env.EARLYBIRD_CLOSED === "1") return true;
-  return todayStr() > DEADLINE;
-}
+import {
+  getEarlybird,
+  isClosed,
+  shortDate,
+  ddayLabel,
+  type Earlybird,
+} from "@/lib/earlybird";
 
 /** 섹션 눈썹 라벨 - 파란 소제목 */
 function Eyebrow({ children }: { children: React.ReactNode }) {
@@ -34,7 +34,15 @@ function GoogleG({ className }: { className?: string }) {
   );
 }
 
-function Cta({ closed, from }: { closed: boolean; from: string }) {
+function Cta({
+  closed,
+  from,
+  eb,
+}: {
+  closed: boolean;
+  from: string;
+  eb: Earlybird;
+}) {
   if (closed) {
     return (
       <div className="rounded-xl border border-neutral-200 bg-neutral-100 px-6 py-4 text-center">
@@ -49,8 +57,8 @@ function Cta({ closed, from }: { closed: boolean; from: string }) {
     <div className="text-center">
       {/* 가격 앵커 - 원가 대비 얼리버드 혜택 */}
       <p className="mb-2.5 text-base">
-        <span className="text-neutral-400 line-through">월 4,900원</span>{" "}
-        <span className="font-extrabold text-red-600">→ 얼리버드 기간 한정 0원</span>
+        <span className="text-neutral-400 line-through">{eb.priceAnchor}</span>{" "}
+        <span className="font-extrabold text-red-600">→ {eb.priceNow}</span>
       </p>
       <TrackClick event="cta_click" params={{ from }}>
         <a
@@ -125,9 +133,10 @@ const PILLAR_INTRO: { pillar: Pillar; title: string; desc: string }[] = [
   { pillar: "money", title: "Money", desc: "계좌 잔액만 갱신하면 순자산과 돈 목표 진척률이 자동 계산돼요" },
 ];
 
-export function Landing() {
-  const closed = isClosed();
-  const d = dday(DEADLINE);
+export async function Landing() {
+  const eb = await getEarlybird();
+  const closed = isClosed(eb);
+  const dLabel = ddayLabel(eb.deadline);
 
   return (
     <div className="mx-auto max-w-2xl pb-0">
@@ -167,8 +176,10 @@ export function Landing() {
       <section className="full-bleed bg-gradient-to-b from-brand-mist via-brand-mist/40 to-transparent">
         <div className="mx-auto max-w-2xl space-y-6 px-4 pb-14 pt-14 text-center sm:pt-20">
           <div className="inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-4 py-1.5 text-sm font-semibold text-red-600">
-            얼리버드 30명 한정
-            {!closed && d >= 0 && <span>· 9/18 마감 {d === 0 ? "D-day" : `D-${d}`}</span>}
+            얼리버드 {eb.capacity}명 한정
+            {!closed && dLabel && (
+              <span>· {shortDate(eb.deadline)} 마감 {dLabel}</span>
+            )}
           </div>
           <h1 className="text-5xl font-extrabold leading-tight tracking-tight text-navy sm:text-6xl">
             멈추지 않는 <span className="text-brand">올해</span>
@@ -188,7 +199,7 @@ export function Landing() {
             <p>WID와 함께면 올해의 목표를 달성할 수 있어요.</p>
           </div>
           {/* CTA ① */}
-          <Cta closed={closed} from="hero" />
+          <Cta closed={closed} from="hero" eb={eb} />
         </div>
       </section>
 
@@ -264,14 +275,14 @@ export function Landing() {
         <section className="space-y-3 text-center">
           <Eyebrow>얼리버드</Eyebrow>
           <h2 className="text-3xl font-extrabold tracking-tight text-navy">
-            왜 30명에게만 드리냐면요
+            왜 {eb.capacity}명에게만 드리냐면요
           </h2>
           <p className="mx-auto max-w-lg text-[15px] leading-relaxed text-neutral-600">
             AI 학습, 다이어트, 책 읽기 - 올해 목표를 하나라도 세워본 분이라면 환영해요.
             <br />
             한 번이라도 올해 강의를 듣고 목표를 향해 달렸던 분이라면, 멈추지 않는 오늘을 함께 만들어봐요.
             <br />
-            <b className="text-navy">첫 30명의 와이저(Wiser)가 남긴 피드백이 WID의 다음 버전을 만듭니다.</b>
+            <b className="text-navy">첫 {eb.capacity}명의 와이저(Wiser)가 남긴 피드백이 WID의 다음 버전을 만듭니다.</b>
           </p>
           <p className="text-sm text-neutral-400">
             자격은 하나 - <b className="text-brand-deep">올해 이루고 싶은 목표가 하나라도 있는 분</b>
@@ -280,7 +291,7 @@ export function Landing() {
 
         {/* 6. CTA ② */}
         <section>
-          <Cta closed={closed} from="final" />
+          <Cta closed={closed} from="final" eb={eb} />
         </section>
       </div>
 
