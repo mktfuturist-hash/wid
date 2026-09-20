@@ -5,20 +5,17 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "
 import Link from "next/link";
 import Script from "next/script";
 import { signIn } from "next-auth/react";
+import { detectInApp, openInDefaultBrowser, type InAppKind } from "@/lib/inapp";
 
 /* ── 인앱 브라우저 감지 ─────────────────────────────────────
    구글은 임베디드 웹뷰의 OAuth를 차단한다(403 disallowed_useragent).
    얼리버드 동선이 카카오 오픈챗이라 카톡 인앱 유입이 많다 →
    카톡은 공식 스킴(kakaotalk://web/openExternal)으로 기본 브라우저를 강제 오픈,
    그 외 인앱(인스타·라인·네이버앱 등)은 안내 + 링크 복사로 우회한다. */
-type Browser = "ok" | "kakao" | "inapp";
+type Browser = "ok" | InAppKind;
 
 function detectBrowser(): Browser {
-  const ua = navigator.userAgent;
-  if (/KAKAOTALK/i.test(ua)) return "kakao";
-  if (/Instagram|FBAN|FBAV|FB_IAB|Line\/|NAVER\(inapp|DaumApps|everytimeApp|; wv\)/i.test(ua))
-    return "inapp";
-  return "ok";
+  return detectInApp() ?? "ok";
 }
 
 /* GIS 전역 타입 (필요한 부분만) */
@@ -74,11 +71,8 @@ export function LoginCard({
   const gisReady = useRef(false);
 
   useEffect(() => {
-    if (browser === "kakao") {
-      // 카톡 공식 스킴으로 외부 브라우저 자동 오픈 (실패 시 아래 안내 UI가 남는다)
-      window.location.href =
-        "kakaotalk://web/openExternal?url=" + encodeURIComponent(window.location.href);
-    }
+    // 카톡은 공식 스킴으로 외부 브라우저 자동 오픈 (실패 시 아래 안내 UI가 남는다)
+    if (browser === "kakao") openInDefaultBrowser("kakao");
   }, [browser]);
 
   /** GIS 스크립트 로드 완료 → 버튼 렌더 (구글 세션 있으면 계정 개인화 표시) */
@@ -180,13 +174,33 @@ export function LoginCard({
               또는 우측 하단 메뉴(⋯) → <b>다른 브라우저로 열기</b>
             </p>
           </div>
-        ) : browser === "inapp" ? (
+        ) : browser === "android" ? (
           <div className="space-y-3 rounded-2xl bg-brand-mist/60 p-4 text-left text-sm leading-relaxed text-neutral-700">
-            <p className="font-bold text-navy">앱 내 브라우저에서는 구글 로그인이 막혀 있어요</p>
+            <p className="font-bold text-navy">앱 안 브라우저에서는 구글 로그인이 막혀 있어요</p>
+            <p>네이버·인스타 등 앱 안에서 여신 경우예요. 아래 버튼 한 번이면 기본 브라우저로 열립니다.</p>
+            <button
+              onClick={() => openInDefaultBrowser("android")}
+              className="w-full rounded-xl bg-brand px-4 py-2.5 font-bold text-white"
+            >
+              기본 브라우저로 열기
+            </button>
+            <button onClick={copyLink} className="w-full rounded-xl border border-brand-mist bg-white px-4 py-2.5 font-semibold text-brand-deep">
+              {copied ? "복사됐어요 ✓" : "안 열리면 링크 복사하기"}
+            </button>
+          </div>
+        ) : browser === "ios" ? (
+          <div className="space-y-3 rounded-2xl bg-brand-mist/60 p-4 text-left text-sm leading-relaxed text-neutral-700">
+            <p className="font-bold text-navy">앱 안 브라우저에서는 구글 로그인이 막혀 있어요</p>
             <p>
-              링크를 복사해 <b>Chrome·Safari</b> 등 기본 브라우저에서 열어 주세요.
+              아래 버튼을 눌러 보시고, 안 열리면 링크를 복사해 <b>Safari</b>에 붙여 넣어 주세요.
             </p>
-            <button onClick={copyLink} className="w-full rounded-xl bg-brand px-4 py-2.5 font-bold text-white">
+            <button
+              onClick={() => { openInDefaultBrowser("ios"); copyLink(); }}
+              className="w-full rounded-xl bg-brand px-4 py-2.5 font-bold text-white"
+            >
+              Safari로 열기
+            </button>
+            <button onClick={copyLink} className="w-full rounded-xl border border-brand-mist bg-white px-4 py-2.5 font-semibold text-brand-deep">
               {copied ? "복사됐어요 ✓" : "링크 복사하기"}
             </button>
           </div>

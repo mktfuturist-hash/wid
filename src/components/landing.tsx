@@ -5,6 +5,7 @@ import { YearCountdown } from "@/components/year-countdown";
 
 import { KAKAO_CTA } from "@/lib/links";
 import { TrackClick } from "@/components/track";
+import { InAppBanner } from "@/components/inapp-banner";
 import {
   getEarlybird,
   isClosed,
@@ -140,6 +141,8 @@ export async function Landing() {
 
   return (
     <div className="mx-auto max-w-2xl pb-0">
+      {/* 인앱 브라우저(카톡·네이버앱) 방문자에게 외부 브라우저 탈출구 - 일반 브라우저에선 안 보임 */}
+      <InAppBanner />
       {/* 0. 스티키 헤더 */}
       <header className="full-bleed sticky top-0 z-50 -mt-6 border-b border-brand-mist bg-white/85 backdrop-blur">
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4 md:px-8">
