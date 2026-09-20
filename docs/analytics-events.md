@@ -31,6 +31,8 @@
 | `project_create` | 프로젝트 추가 | - | 매번 |
 | `routine_create` | 루틴 추가 | - | 매번 |
 | `note_create` | 노트 추가 | - | 매번 |
+| `onboarding_ai_generate` | 시작 위저드에서 AI 계획 생성 성공 | - | 매번 |
+| `onboarding_complete` | 시작 위저드로 목표 세트 생성 | `template: ai \| diet \| reading \| ai_custom` | 계정당 1회 |
 | `review_create` | 계획·회고 새 문서 생성 | `scope`(일간/주간 등) | 매번 |
 | `money_txn_add` | 가계부 지출/수입 기록 | - (금액·카테고리 미전송) | 매번 |
 

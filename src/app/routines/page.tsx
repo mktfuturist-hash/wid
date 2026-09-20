@@ -27,7 +27,13 @@ function periodDays(start: string, end: string): string[] {
 }
 
 /* 🔁 오늘의 루틴 - 하루의 실행 허브. 위쪽은 오늘 체크(루틴+오늘 할 일), 아래쪽은 루틴 관리 */
-export default async function RoutinesPage() {
+export default async function RoutinesPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const sp = await searchParams;
+  const justOnboarded = sp.welcome === "1"; // 시작 위저드 완료 직후 착지
   const uid = await requireUserId();
   const today = todayStr();
   const [rts, goalList, areaList, openTasks, prjs] = await Promise.all([
@@ -88,6 +94,14 @@ export default async function RoutinesPage() {
           </div>
         </div>
       </header>
+
+      {/* 시작 위저드 완료 직후: 첫 체크(aha moment)로 유도 */}
+      {justOnboarded && (
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
+          🎉 <b>준비 끝!</b> 목표와 루틴이 만들어졌어요. 아래에서 <b>오늘의 첫 루틴을 눌러 체크</b>해 보세요 -
+          체크할 때마다 목표 진척률이 움직입니다.
+        </div>
+      )}
 
       {/* ── 오늘의 루틴 체크 ── */}
       <section>

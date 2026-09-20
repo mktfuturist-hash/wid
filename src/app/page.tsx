@@ -7,6 +7,7 @@ import { computeRoutineStats } from "@/lib/routine-stats";
 import { requireUserId } from "@/lib/session";
 import { auth, authEnabled } from "@/auth";
 import { Landing } from "@/components/landing";
+import { StartWizard } from "@/components/start-wizard";
 import { todayStr, ddayLabel, fmtDate } from "@/lib/dates";
 import {
   Card, DdayBadge, Empty, PILLARS, ProgressBar, SectionTitle, type Pillar,
@@ -58,23 +59,8 @@ export default async function Home() {
         </Link>
       </header>
 
-      {/* 온보딩: 아직 아무것도 없을 때 설명서부터 안내 */}
-      {areaList.length === 0 && activeGoals.length === 0 && (
-        <div className="rounded-xl border border-blue-200 bg-gradient-to-r from-blue-50 to-emerald-50 p-5">
-          <h2 className="font-bold">👋 처음 오셨나요?</h2>
-          <p className="mt-1 text-sm text-neutral-600">
-            입력을 시작하기 전에 <b>사용 설명서</b>를 먼저 읽어보세요. 데이터가 어떻게 연동되는지,
-            그리고 <b>최종 목표 → 세부 목표 → 중간 목표 → 프로젝트 → 할 일</b> 순서로 세팅하는 법을
-            5분 안에 안내합니다.
-          </p>
-          <Link
-            href="/guide"
-            className="mt-3 inline-block rounded-lg bg-neutral-900 px-4 py-2 text-sm font-semibold text-white hover:bg-neutral-700"
-          >
-            사용 설명서 읽고 시작하기 →
-          </Link>
-        </div>
-      )}
+      {/* 온보딩: 아직 아무것도 없으면 읽는 설명서 대신 만들어 주는 시작 위저드 */}
+      {areaList.length === 0 && activeGoals.length === 0 && <StartWizard />}
 
       {/* 일 │ 삶 │ 돈 3열: 각 기둥의 목표 진척 */}
       <div className="grid gap-4 lg:grid-cols-3">

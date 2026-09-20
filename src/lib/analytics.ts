@@ -22,7 +22,9 @@ export type EventName =
   | "note_create"
   | "review_create"
   | "money_txn_add"
-  | "ai_tasks_extract";
+  | "ai_tasks_extract"
+  | "onboarding_ai_generate"
+  | "onboarding_complete";
 
 type Params = Record<string, string | number | boolean | null | undefined>;
 
