@@ -10,6 +10,7 @@ import { computeRoutineStats, toKstDate } from "@/lib/routine-stats";
 import { todayStr, fmtDate, ddayLabel } from "@/lib/dates";
 import { Card, Empty, FieldLabel, SectionTitle } from "@/components/ui";
 import { ImageTaskCapture } from "@/components/image-task-capture";
+import { OptimisticToggle } from "@/components/optimistic-toggle";
 import { TrackSubmit } from "@/components/track";
 
 export const dynamic = "force-dynamic";
@@ -110,24 +111,32 @@ export default async function RoutinesPage({
           <Empty>아직 루틴이 없습니다 - 아래 &lsquo;새 루틴&rsquo;에서 첫 루틴을 만들어 보세요.</Empty>
         ) : (
           <div className="flex flex-wrap gap-2">
-            {activeStats.map(({ r, st }) =>
-              st.doneToday ? (
-                <form key={r.id} action={unlogRoutineToday.bind(null, r.id)}>
-                  <TrackSubmit event="routine_uncheck" params={{ from: "routines" }} />
-                  <button className="flex items-center gap-1.5 rounded-full bg-emerald-500 px-3.5 py-1.5 text-sm font-medium text-white shadow-sm">
-                    ✓ {r.title}
-                    {st.streak > 1 && <span className="text-xs opacity-80">🔥{st.streak}</span>}
-                  </button>
-                </form>
-              ) : (
-                <form key={r.id} action={logRoutine.bind(null, r.id)}>
-                  <TrackSubmit event="routine_check" params={{ from: "routines", streak: st.streak + 1 }} />
-                  <button className="flex items-center gap-1.5 rounded-full border border-dashed border-neutral-300 bg-white px-3.5 py-1.5 text-sm text-neutral-500 hover:border-emerald-400 hover:text-emerald-600">
-                    {r.title}
-                  </button>
-                </form>
-              )
-            )}
+            {activeStats.map(({ r, st }) => {
+              const nextStreak = st.doneToday ? st.streak : st.streak + 1;
+              return (
+                <OptimisticToggle
+                  key={r.id}
+                  done={st.doneToday}
+                  checkAction={logRoutine.bind(null, r.id)}
+                  uncheckAction={unlogRoutineToday.bind(null, r.id)}
+                  doneUi={{
+                    className: "flex items-center gap-1.5 rounded-full bg-emerald-500 px-3.5 py-1.5 text-sm font-medium text-white shadow-sm",
+                    label: (
+                      <>
+                        ✓ {r.title}
+                        {nextStreak > 1 && <span className="text-xs opacity-80">🔥{nextStreak}</span>}
+                      </>
+                    ),
+                    event: "routine_check", params: { from: "routines", streak: nextStreak },
+                  }}
+                  undoneUi={{
+                    className: "flex items-center gap-1.5 rounded-full border border-dashed border-neutral-300 bg-white px-3.5 py-1.5 text-sm text-neutral-500 hover:border-emerald-400 hover:text-emerald-600",
+                    label: r.title,
+                    event: "routine_uncheck", params: { from: "routines" },
+                  }}
+                />
+              );
+            })}
           </div>
         )}
       </section>
@@ -150,27 +159,21 @@ export default async function RoutinesPage({
               return (
                 <Card key={r.id}>
                   <div className="flex items-center gap-3">
-                    {st.doneToday ? (
-                      <form action={unlogRoutineToday.bind(null, r.id)}>
-                        <TrackSubmit event="routine_uncheck" params={{ from: "routines" }} />
-                        <button
-                          className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500 text-lg text-white shadow-sm"
-                          title="오늘 기록 취소"
-                        >
-                          ✓
-                        </button>
-                      </form>
-                    ) : (
-                      <form action={logRoutine.bind(null, r.id)}>
-                        <TrackSubmit event="routine_check" params={{ from: "routines", streak: st.streak + 1 }} />
-                        <button
-                          className="flex h-9 w-9 items-center justify-center rounded-xl border-2 border-dashed border-neutral-300 text-lg text-neutral-300 hover:border-emerald-400 hover:text-emerald-400"
-                          title="루틴 기록"
-                        >
-                          ✓
-                        </button>
-                      </form>
-                    )}
+                    <OptimisticToggle
+                      done={st.doneToday}
+                      checkAction={logRoutine.bind(null, r.id)}
+                      uncheckAction={unlogRoutineToday.bind(null, r.id)}
+                      doneUi={{
+                        className: "flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500 text-lg text-white shadow-sm",
+                        label: "✓", title: "오늘 기록 취소",
+                        event: "routine_check", params: { from: "routines", streak: st.doneToday ? st.streak : st.streak + 1 },
+                      }}
+                      undoneUi={{
+                        className: "flex h-9 w-9 items-center justify-center rounded-xl border-2 border-dashed border-neutral-300 text-lg text-neutral-300 hover:border-emerald-400 hover:text-emerald-400",
+                        label: "✓", title: "루틴 기록",
+                        event: "routine_uncheck", params: { from: "routines" },
+                      }}
+                    />
                     <div className="min-w-0 flex-1">
                       <div className="font-medium">{r.title}</div>
                       <div className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-neutral-400">
@@ -288,15 +291,20 @@ export default async function RoutinesPage({
               const prj = projectOf(t.projectId);
               return (
                 <div key={t.id} className="flex items-center gap-3 px-4 py-2.5">
-                  <form action={toggleTask.bind(null, t.id, true)}>
-                    <TrackSubmit event="task_complete" params={{ from: "routines" }} />
-                    <button
-                      className="flex h-5 w-5 items-center justify-center rounded-md border border-neutral-300 bg-white text-xs text-transparent hover:border-neutral-500"
-                      aria-label="완료"
-                    >
-                      ✓
-                    </button>
-                  </form>
+                  <OptimisticToggle
+                    done={false}
+                    checkAction={toggleTask.bind(null, t.id, true)}
+                    uncheckAction={toggleTask.bind(null, t.id, false)}
+                    doneUi={{
+                      className: "flex h-5 w-5 items-center justify-center rounded-md border border-neutral-900 bg-neutral-900 text-xs text-white",
+                      label: "✓", ariaLabel: "완료",
+                      event: "task_complete", params: { from: "routines" },
+                    }}
+                    undoneUi={{
+                      className: "flex h-5 w-5 items-center justify-center rounded-md border border-neutral-300 bg-white text-xs text-transparent hover:border-neutral-500",
+                      label: "✓", ariaLabel: "완료",
+                    }}
+                  />
                   <div className="min-w-0 flex-1">
                     <span className="block truncate text-sm">{t.title}</span>
                     {prj && (

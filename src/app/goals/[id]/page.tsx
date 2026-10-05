@@ -9,6 +9,7 @@ import {
   setGoalStatus, updateGoalCurrent, toggleTask,
 } from "@/lib/actions";
 import { MilestoneRow } from "./milestone-row";
+import { OptimisticToggle } from "@/components/optimistic-toggle";
 import { NumberInput } from "@/components/number-input";
 import { GoalSettings } from "./goal-settings";
 import { ConfirmButton } from "@/components/confirm-button";
@@ -148,18 +149,20 @@ export default async function GoalDetail({
                       <ul className="mt-2 space-y-1">
                         {pts.map((t) => (
                           <li key={t.id} className="flex items-center gap-2 text-sm">
-                            <form action={toggleTask.bind(null, t.id, !t.done)}>
-                              <button
-                                className={`unstyled flex h-4 w-4 cursor-pointer items-center justify-center rounded border text-[10px] ${
-                                  t.done
-                                    ? "border-neutral-900 bg-neutral-900 text-white"
-                                    : "border-neutral-300 bg-white text-transparent hover:border-neutral-500"
-                                }`}
-                                aria-label="완료 토글"
-                              >
-                                ✓
-                              </button>
-                            </form>
+                            <OptimisticToggle
+                              done={t.done}
+                              checkAction={toggleTask.bind(null, t.id, true)}
+                              uncheckAction={toggleTask.bind(null, t.id, false)}
+                              doneUi={{
+                                className: "unstyled flex h-4 w-4 cursor-pointer items-center justify-center rounded border text-[10px] border-neutral-900 bg-neutral-900 text-white",
+                                label: "✓", ariaLabel: "완료 토글",
+                                event: "task_complete", params: { from: "goal" },
+                              }}
+                              undoneUi={{
+                                className: "unstyled flex h-4 w-4 cursor-pointer items-center justify-center rounded border text-[10px] border-neutral-300 bg-white text-transparent hover:border-neutral-500",
+                                label: "✓", ariaLabel: "완료 토글",
+                              }}
+                            />
                             <span className={`min-w-0 flex-1 truncate ${t.done ? "text-neutral-400 line-through" : "text-neutral-700"}`}>
                               {t.title}
                             </span>

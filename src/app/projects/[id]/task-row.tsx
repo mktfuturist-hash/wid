@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useOptimistic, useState, useTransition } from "react";
 import { fmtDate } from "@/lib/dates";
 import { DdayBadge } from "@/components/ui";
 
@@ -27,6 +27,9 @@ export function TaskRow({
   deleteAction: () => Promise<void>;
 }) {
   const [editing, setEditing] = useState(false);
+  // 낙관적 완료 표시 - 서버 왕복을 기다리지 않고 줄 전체(체크·취소선)가 즉시 바뀐다
+  const [optDone, setOptDone] = useOptimistic(t.done);
+  const [, startToggle] = useTransition();
 
   if (editing) {
     return (
@@ -54,25 +57,30 @@ export function TaskRow({
 
   return (
     <li className="flex items-center gap-2.5">
-      <form action={toggleAction}>
-        <button
-          className={`unstyled flex h-5 w-5 cursor-pointer items-center justify-center rounded-md border text-xs ${
-            t.done
-              ? "border-neutral-900 bg-neutral-900 text-white"
-              : "border-neutral-300 bg-white text-transparent hover:border-neutral-500"
-          }`}
-          aria-label="완료 토글"
-        >
-          ✓
-        </button>
-      </form>
-      <span className={`flex-1 text-sm ${t.done ? "text-neutral-400 line-through" : ""}`}>
+      <button
+        type="button"
+        onClick={() =>
+          startToggle(async () => {
+            setOptDone(!optDone);
+            await toggleAction();
+          })
+        }
+        className={`unstyled flex h-5 w-5 cursor-pointer items-center justify-center rounded-md border text-xs ${
+          optDone
+            ? "border-neutral-900 bg-neutral-900 text-white"
+            : "border-neutral-300 bg-white text-transparent hover:border-neutral-500"
+        }`}
+        aria-label="완료 토글"
+      >
+        ✓
+      </button>
+      <span className={`flex-1 text-sm ${optDone ? "text-neutral-400 line-through" : ""}`}>
         {t.title}
       </span>
       {t.dueDate && (
         <span className="text-xs tabular-nums text-neutral-400">{fmtDate(t.dueDate)}</span>
       )}
-      {!t.done && <DdayBadge label={t.ddayLabel} />}
+      {!optDone && <DdayBadge label={t.ddayLabel} />}
       <button
         type="button"
         className="cursor-pointer text-xs text-neutral-300 hover:text-neutral-600"

@@ -9,6 +9,7 @@ import { Card, DdayBadge, Empty, SectionTitle, SmartDate } from "@/components/ui
 import { requireUserId } from "@/lib/session";
 import { ImageTaskCapture } from "@/components/image-task-capture";
 import { TrackSubmit } from "@/components/track";
+import { OptimisticToggle } from "@/components/optimistic-toggle";
 
 export const dynamic = "force-dynamic";
 
@@ -83,19 +84,22 @@ export default async function TasksPage({
         const overdue = !t.done && t.dueDate && t.dueDate < today;
         return (
           <div key={t.id} className="group flex items-start gap-3 px-4 py-2.5 sm:items-center">
-            <form action={toggleTask.bind(null, t.id, !t.done)} className="pt-0.5 sm:pt-0">
-              {!t.done && <TrackSubmit event="task_complete" params={{ from: "tasks" }} />}
-              <button
-                className={`flex h-5 w-5 items-center justify-center rounded-md border text-xs ${
-                  t.done
-                    ? "border-neutral-900 bg-neutral-900 text-white"
-                    : "border-neutral-300 bg-white text-transparent hover:border-neutral-500"
-                }`}
-                aria-label="완료 토글"
-              >
-                ✓
-              </button>
-            </form>
+            <span className="pt-0.5 sm:pt-0">
+              <OptimisticToggle
+                done={t.done}
+                checkAction={toggleTask.bind(null, t.id, true)}
+                uncheckAction={toggleTask.bind(null, t.id, false)}
+                doneUi={{
+                  className: "flex h-5 w-5 items-center justify-center rounded-md border text-xs border-neutral-900 bg-neutral-900 text-white",
+                  label: "✓", ariaLabel: "완료 토글",
+                  event: "task_complete", params: { from: "tasks" },
+                }}
+                undoneUi={{
+                  className: "flex h-5 w-5 items-center justify-center rounded-md border text-xs border-neutral-300 bg-white text-transparent hover:border-neutral-500",
+                  label: "✓", ariaLabel: "완료 토글",
+                }}
+              />
+            </span>
             {/* 모바일: 1줄 = 제목(전체 폭), 2줄 = 날짜·D-day·버튼 / PC(sm+): 기존처럼 한 줄 */}
             <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1">
               <div className="w-full min-w-0 sm:w-auto sm:flex-1">

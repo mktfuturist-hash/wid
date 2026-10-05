@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useOptimistic, useState, useTransition } from "react";
 import { SmartDate } from "@/components/ui";
 
 type Milestone = {
@@ -23,6 +23,9 @@ export function MilestoneRow({
   deleteAction: () => Promise<void>;
 }) {
   const [editing, setEditing] = useState(false);
+  // 낙관적 완료 표시 - 서버 왕복을 기다리지 않고 줄 전체(체크·취소선)가 즉시 바뀐다
+  const [optDone, setOptDone] = useOptimistic(m.done);
+  const [, startToggle] = useTransition();
 
   if (editing) {
     return (
@@ -47,19 +50,24 @@ export function MilestoneRow({
 
   return (
     <li className="flex items-center gap-2.5">
-      <form action={toggleAction}>
-        <button
-          className={`unstyled flex h-5 w-5 cursor-pointer items-center justify-center rounded-md border text-xs ${
-            m.done
-              ? "border-neutral-900 bg-neutral-900 text-white"
-              : "border-neutral-300 bg-white text-transparent hover:border-neutral-500"
-          }`}
-          aria-label="완료 토글"
-        >
-          ✓
-        </button>
-      </form>
-      <span className={`min-w-0 flex-1 text-sm ${m.done ? "text-neutral-400 line-through" : ""}`}>
+      <button
+        type="button"
+        onClick={() =>
+          startToggle(async () => {
+            setOptDone(!optDone);
+            await toggleAction();
+          })
+        }
+        className={`unstyled flex h-5 w-5 cursor-pointer items-center justify-center rounded-md border text-xs ${
+          optDone
+            ? "border-neutral-900 bg-neutral-900 text-white"
+            : "border-neutral-300 bg-white text-transparent hover:border-neutral-500"
+        }`}
+        aria-label="완료 토글"
+      >
+        ✓
+      </button>
+      <span className={`min-w-0 flex-1 text-sm ${optDone ? "text-neutral-400 line-through" : ""}`}>
         {m.title}
       </span>
       {m.dueDate && (
